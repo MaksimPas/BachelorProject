@@ -27,6 +27,7 @@ namespace BachelorProject.Migrations
             string roleName1 = "new_user";
             string roleName2 = "worker";
             string roleName3 = "admin";
+            string roleName4 = "subAdmin";
             if (!roleManager.RoleExists(roleName1))
             {
                 roleManager.Create(new IdentityRole(roleName1));
@@ -39,6 +40,10 @@ namespace BachelorProject.Migrations
             if (!roleManager.RoleExists(roleName3))
             {
                 roleManager.Create(new IdentityRole(roleName3));
+            }
+            if (!roleManager.RoleExists(roleName4))
+            {
+                roleManager.Create(new IdentityRole(roleName4));
             }
 
             var adminUser = userManager.FindByEmail("admin@rodekors.com");

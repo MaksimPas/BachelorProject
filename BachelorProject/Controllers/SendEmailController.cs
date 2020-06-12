@@ -106,7 +106,7 @@ namespace BachelorProject.Controllers
             //customers wants to be notified 1 month in advance
             //LINQ doesnt understand C# code. must retrieve the entire collection and filer it here in this method
             var toBeExpired = depotRecords.Where(record => (record.ExpirationDate != null) && (record.ExpirationDate >= DateTime.Today && record.ExpirationDate <= DateTime.Today.AddMonths(1)) )
-                                           //consider only those records which have not been depleted:
+                                           //consider only those records which have not been depleted completely:
                                           .Where(record => record.QuantityLeft > 0);
             var expired = depotRecords.Where(record => (record.ExpirationDate != null) && (record.ExpirationDate < DateTime.Today))
                                       //consider only those records which have not been depleted:

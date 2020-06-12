@@ -63,6 +63,8 @@ namespace BachelorProject.Controllers
                     return View("Worker");
                 case "admin":
                     return View("Admin");
+                case "subAdmin":
+                    return View("SubAdmin");
                 default:
                     throw new NotImplementedException(string.Format("User has unidentified role {0}", userRole));
             }

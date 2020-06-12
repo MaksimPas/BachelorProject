@@ -32,7 +32,7 @@ namespace BachelorProject.Controllers
             return View(await logRecords.OrderByDescending(record => record.Id).ToPagedListAsync(pageNumber, pageSize));
         }
 
-        [Authorize(Roles = "worker")]
+        [Authorize(Roles = "worker,subAdmin")]
         public async Task<ActionResult> IndexByUserId()
         {
             try
@@ -61,7 +61,7 @@ namespace BachelorProject.Controllers
             }
         }
 
-        [Authorize(Roles = "worker")]
+        [Authorize(Roles = "worker,subAdmin")]
         public async Task<ActionResult> UpdateIndexByUserId(string searchParameter, int? page, string sortColumn, string sortOrder)
         {
             try
@@ -292,7 +292,7 @@ namespace BachelorProject.Controllers
         //    return View(logRecord);
         //}
 
-        [Authorize(Roles = "worker")]
+        [Authorize(Roles = "worker,subAdmin")]
         public void Create([Bind(Include = "UserId,Action,InfoMessage")] LogRecord logRecord)
         {
             if (ModelState.IsValid)

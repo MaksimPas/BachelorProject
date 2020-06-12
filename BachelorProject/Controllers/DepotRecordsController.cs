@@ -49,7 +49,8 @@ namespace BachelorProject.Controllers
         //Can create a view model and use it --> much more convenient
 
         // GET: DepotRecords
-        [Authorize(Roles = "admin")]
+
+        [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> Index()
         {   
             var depotRecords = db.DepotRecords.Include(d => d.Equipment);
@@ -61,7 +62,7 @@ namespace BachelorProject.Controllers
             return View(await depotRecords.OrderBy(record => record.Id).ToPagedListAsync(pageNumber,pageSize));
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> UpdateIndex(string searchParameter, int? page, string sortColumn, string sortOrder)
         {
             int pageNumber = (page ?? 1);
@@ -168,7 +169,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: DepotRecords/Details/5
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -185,7 +186,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: DepotRecords/Create
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         public ActionResult Create()
         {
             ViewBag.selectList = new SelectList(db.Equipments, "Id", "NameAndType");
@@ -195,7 +196,7 @@ namespace BachelorProject.Controllers
         // POST: DepotRecords/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "EquipmentCodeId,ExpirationDate,QuantityOriginal,Information")] DepotRecord depotRecord)
@@ -213,7 +214,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: DepotRecords/Edit/5
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -230,7 +231,7 @@ namespace BachelorProject.Controllers
         }
 
         // POST: DepotRecords/Edit/5
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,EquipmentCodeId,ExpirationDate,DateOfRecord,QuantityOriginal,QuantityLeft,Information")] DepotRecord depotRecord)
@@ -252,7 +253,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: DepotRecords/Delete/5
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -271,7 +272,7 @@ namespace BachelorProject.Controllers
         // POST: DepotRecords/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             DepotRecord depotRecord = await db.DepotRecords.FindAsync(id);
@@ -280,7 +281,6 @@ namespace BachelorProject.Controllers
             return RedirectToAction("Index");
         }
 
-        //[Authorize(Roles = "admin")]
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -290,7 +290,7 @@ namespace BachelorProject.Controllers
             base.Dispose(disposing);
         }
 
-        [Authorize(Roles = "worker")]
+        [Authorize(Roles = "worker,subAdmin")]
         public ActionResult ReduceQuantity()
         {
             if (TempData["StatusMessage"] != null)
@@ -301,7 +301,7 @@ namespace BachelorProject.Controllers
             return View();
         }
 
-        [Authorize(Roles = "worker")]
+        [Authorize(Roles = "worker,subAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ReduceQuantity([Bind(Include = "EquipmentId,ReduceQuantity")] ReduceAmountViewModel formCollection)
@@ -318,10 +318,14 @@ namespace BachelorProject.Controllers
                 {
                     var depotRecords = db.DepotRecords
                                          .Where(record => record.EquipmentCodeId == formCollection.EquipmentId)
+                                         .ToList()
+                                         // workers can ONLY use equipment with valid expiration date. Discard expired equipment:
+                                         .Where(record => record.ExpirationDate >= DateTime.Today || record.ExpirationDate == null)
                                          .OrderBy(record => record.ExpirationDate);
+                    
                     if (depotRecords.Count()==0)
                     {
-                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi {0} finnes ikke på lageret",
+                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi {0} med gyldig utløpsdato ikke finnes på lageret",
                                                                 nameAndType,
                                                                 quantityToReduce
                                                                 ));
@@ -335,7 +339,7 @@ namespace BachelorProject.Controllers
                     }
                     if (totalQuantity < quantityToReduce)
                     {
-                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi det er kun {2} enheter på lageret",
+                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi det er kun {2} enheter med gyldig utløpsdato på lageret",
                                                                 nameAndType,
                                                                 quantityToReduce,
                                                                 totalQuantity));

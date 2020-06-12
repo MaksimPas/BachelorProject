@@ -194,9 +194,9 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SendEmailController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Migrations\202006100540356_Init.cs" />
-    <Compile Include="Migrations\202006100540356_Init.designer.cs">
-      <DependentUpon>202006100540356_Init.cs</DependentUpon>
+    <Compile Include="Migrations\202006122244547_Init.cs" />
+    <Compile Include="Migrations\202006122244547_Init.designer.cs">
+      <DependentUpon>202006122244547_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Validation\CustomAttributes.cs" />
     <Compile Include="Global.asax.cs">
@@ -327,6 +327,7 @@
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Views\Manage\EditProfileInfo.cshtml" />
+    <Content Include="Views\Home\SubAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -339,8 +340,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202006100540356_Init.resx">
-      <DependentUpon>202006100540356_Init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202006122244547_Init.resx">
+      <DependentUpon>202006122244547_Init.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\ValidationResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

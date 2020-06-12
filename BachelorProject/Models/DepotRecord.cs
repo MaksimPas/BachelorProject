@@ -20,7 +20,6 @@ namespace BachelorProject.Models
         public int EquipmentCodeId { get; set; }
         public Equipment Equipment { get; set; }
 
-        //[DataType(DataType.Date, ErrorMessage = "Feil dato")
         
         [DataType(DataType.Date, ErrorMessageResourceName = "DateErrror", ErrorMessageResourceType = typeof(ValidationResources))]
         //DataFormatString must be ISO standard {0:yyyy-MM-dd}, see https://stackoverflow.com/questions/31097748/date-does-not-display-from-model-on-html-input-type-date
@@ -28,7 +27,9 @@ namespace BachelorProject.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ConvertEmptyStringToNull =true,NullDisplayText = "Ingen utløpsdato", ApplyFormatInEditMode = true)]
         public DateTime? ExpirationDate { get; set; } //using nullable type because the field can be null
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
+        //this attribute defined display format in input fields:
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ConvertEmptyStringToNull = true, NullDisplayText = "Ingen utløpsdato", ApplyFormatInEditMode = true)]
         public DateTime DateOfRecord { get; set; }
         
         [Required(ErrorMessage = "Feltet Antall er obligatorisk!")]
