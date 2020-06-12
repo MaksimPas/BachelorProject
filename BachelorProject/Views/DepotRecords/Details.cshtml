@@ -1,0 +1,50 @@
+﻿@model BachelorProject.Models.DepotRecord
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>DepotRecord</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Equipment.NameAndType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Equipment.NameAndType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ExpirationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ExpirationDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QuantityOriginal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QuantityOriginal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QuantityLeft)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QuantityLeft)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

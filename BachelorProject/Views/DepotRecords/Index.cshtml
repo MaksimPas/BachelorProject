@@ -1,0 +1,82 @@
+﻿@model IEnumerable<BachelorProject.Models.DepotRecord>
+
+@{
+    ViewBag.Title = "Index";
+}
+<h2>Lager</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<div class="form-group">
+    <div class="col-md-10">
+        <input id="search" class="form-control" type="text" name="search" value="" />
+    </div>
+</div>
+<br />
+<br />
+
+<div id="tableDiv">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Equipment.NameAndType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpirationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityOriginal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityLeft)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Equipment.NameAndType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpirationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuantityOriginal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuantityLeft)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+
+<br /><br />
+<script>
+    $(function () {
+        $("#search").keyup(function () {
+            $.ajax({
+                type: "GET",
+                url: "/DepotRecords/Search",
+                data:
+                {
+                    searchParameter: $("#search").val()
+                },
+                success: function (data) {
+                    $('#tableDiv').html(data);
+                }
+            });
+        });
+    });
+</script>
