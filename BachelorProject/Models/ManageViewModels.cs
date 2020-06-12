@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
+using BachelorProject.CustomAttributes;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 
@@ -28,14 +30,15 @@ namespace BachelorProject.Models
     public class SetPasswordViewModel
     {
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0}et må inneholde minst {2} tegn.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "New password")]
+        [Display(Name = "Nytt passord")]
         public string NewPassword { get; set; }
 
+        
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Display(Name = "Bekreft passordet")]
+        [Compare("NewPassword", ErrorMessage = "Passord og brekreft passord må være like.")]
         public string ConfirmPassword { get; set; }
     }
 
@@ -43,18 +46,18 @@ namespace BachelorProject.Models
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
+        [Display(Name = "Nåværende passord")]
         public string OldPassword { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0}et må inneholde minst {2} tegn.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "New password")]
+        [Display(Name = "Nytt passord")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Display(Name = "Bekreft passordet")]
+        [Compare("NewPassword", ErrorMessage = "Passord og brekreft passord må være like.")]
         public string ConfirmPassword { get; set; }
     }
 
@@ -82,5 +85,37 @@ namespace BachelorProject.Models
     {
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
+    }
+
+    public class EditProfileInfoViewModel
+    {
+        public static EditProfileInfoViewModel Create(string firstName, string lastName, string phone, string email)
+        {
+            return new EditProfileInfoViewModel
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Phone = phone,
+                Email = email
+            };
+        }
+
+        [Required]
+        [Name]
+        [Display(Name = "Fornavn")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Name]
+        [Display(Name = "Etternavn")]
+        public string LastName { get; set; }
+
+        [Required]
+        [NorwegianPhoneNumber(ErrorMessage = "Telefon har ugyldig format")]
+        [Display(Name = "Telefon")]
+        public string Phone { get; set; }
+
+        [EmailAddress]
+        public string Email { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -7,6 +7,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BachelorProject.Models;
+using System.Net;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace BachelorProject.Controllers
 {
@@ -16,8 +18,15 @@ namespace BachelorProject.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
+        private ApplicationDbContext db;
+        private UserStore<ApplicationUser> us;
+        private ApplicationUserManager newUserManager;
+
         public ManageController()
         {
+            db = new ApplicationDbContext();
+            us = new UserStore<ApplicationUser>(db);
+            newUserManager = new ApplicationUserManager(us);
         }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -55,12 +64,13 @@ namespace BachelorProject.Controllers
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+                message == ManageMessageId.ChangePasswordSuccess ? "Ditt passord ble endret."
+                : message == ManageMessageId.SetPasswordSuccess ? "Ditt passord ble opprettet."
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
-                : message == ManageMessageId.Error ? "An error has occurred."
+                : message == ManageMessageId.Error ? "En feil oppstod."
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.EditProfileInfoSuccess ? "Profilinformasjonen ble endret!"
                 : "";
 
             var userId = User.Identity.GetUserId();
@@ -281,8 +291,8 @@ namespace BachelorProject.Controllers
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : message == ManageMessageId.Error ? "An error has occurred."
+                message == ManageMessageId.RemoveLoginSuccess ? "Suksess! Den eksterne innloggingstypen ble fjernet."
+                : message == ManageMessageId.Error ? "En feil oppstod. Vennligst sjekk at din e-postadresse stemmer med e-postadressen for ektern type innlogging."
                 : "";
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             if (user == null)
@@ -320,6 +330,44 @@ namespace BachelorProject.Controllers
             }
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+        }
+
+        public ActionResult EditProfileInfo()
+        {
+            string id = User.Identity.GetUserId();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            EditProfileInfoViewModel profileInfo = EditProfileInfoViewModel.Create(UserManager.GetFirstName(id), UserManager.GetLastName(id),UserManager.GetPhoneNumber(id), UserManager.GetEmail(id));
+            if (profileInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(profileInfo);
+        }
+
+        // POST: DepotRecords/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditProfileInfo([Bind(Include = "FirstName,LastName,Phone,Email")] EditProfileInfoViewModel editProfileInfoViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //must NOT edit email adress
+                string id = User.Identity.GetUserId();
+                ApplicationUser user = newUserManager.FindById(id);
+                user.FirstName = editProfileInfoViewModel.FirstName;
+                user.LastName = editProfileInfoViewModel.LastName;
+                user.PhoneNumber = editProfileInfoViewModel.Phone;
+                await db.SaveChangesAsync();
+                ViewBag.StatusMessage = "Profilinformasjonen ble endret!";
+                return RedirectToAction("Index", new 
+                { 
+                    Message = ManageMessageId.EditProfileInfoSuccess 
+                });
+            }
+            return View(editProfileInfoViewModel);
         }
 
         protected override void Dispose(bool disposing)
@@ -381,6 +429,7 @@ namespace BachelorProject.Controllers
             SetPasswordSuccess,
             RemoveLoginSuccess,
             RemovePhoneSuccess,
+            EditProfileInfoSuccess,
             Error
         }
 

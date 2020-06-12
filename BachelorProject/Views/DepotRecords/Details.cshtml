@@ -1,50 +1,82 @@
 ﻿@model BachelorProject.Models.DepotRecord
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Detaljer";
 }
 
-<h2>Details</h2>
+<div class="container" style="word-break: break-word">
+    <form>
+        <h2>Informasjon om utstyret</h2>
+        <hr />
+        
+        <dl class="dl-horizontal form-horizontal">
+            <div class="form-group">
+                <dt>
+                    <span>Navn og type</span>
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Equipment.NameAndType)
+                </dd>
+            </div>
+
+            <div class="form-group">
+                <dt>
+                    <span>Opprettingsdato</span>
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.DateOfRecord)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Utløpsdato</span>
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.ExpirationDate)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    @*@Html.DisplayNameFor(model => model.QuantityOriginal)*@
+                    <span>Antall opprinnelig</span>
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.QuantityOriginal)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Antall igjen</span>
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.QuantityLeft)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Kommentar</span>
+                </dt>
+
+                <dd style="width: 40%">
+                    @Html.DisplayFor(model => model.Information)
+                </dd>
+            </div>
+            <div class="form-group">
+                    <dd><button type="button" class="btn btn-success m-0" onclick="location.href='@Url.Action("Edit","DepotRecords",new { id = Model.Id })'">Rediger</button></dd>
+            </div>
+        </dl>
+    </form>
+    
+</div>
 
 <div>
-    <h4>DepotRecord</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Equipment.NameAndType)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Equipment.NameAndType)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ExpirationDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ExpirationDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.QuantityOriginal)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.QuantityOriginal)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.QuantityLeft)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.QuantityLeft)
-        </dd>
-
-    </dl>
+    <button type="button" class="btn btn-primary m-0" onclick="location.href='@Url.Action("Index","DepotRecords")'">Tilbake til oversikten</button>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+    
+    
+

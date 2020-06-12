@@ -1,67 +1,127 @@
 ﻿@model BachelorProject.Models.DepotRecord
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Rediger";
 }
 
-<h2>Edit</h2>
+<h2>Rediger info</h2>
 
 
-@using (Html.BeginForm())
+@if (ViewBag.ErrorMessage != null)
+{
+    <p class="text-danger"> Feilmelding: @Html.Raw(ViewBag.ErrorMessage) </p>
+}
+@using (Html.BeginForm("Edit", "DepotRecords", FormMethod.Post, htmlAttributes: new { @id = "form" }))
 {
     @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>DepotRecord</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.Id)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.EquipmentCodeId, "EquipmentCodeId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.EquipmentCodeId, ViewBag.dropDownList as SelectList, new { @id = "dropdownlist", @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.EquipmentCodeId, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfRecord, "Opprettingsdato", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateOfRecord, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                @Html.ValidationMessageFor(model => model.DateOfRecord, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EquipmentCodeId, "Navn og type", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.EquipmentCodeId, ViewBag.dropDownList as SelectList, new { @id = "dropdownlist", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.EquipmentCodeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Har utstyret utløpsdato?", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input id="radio_yes" type="radio" name="expiration" value="YES" checked>
+                <label for="radio_yes">Ja</label>
+                <input id="radio_no" type="radio" name="expiration" value="NO">
+                <label for="radio_no">Nei</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ExpirationDate, "Utløpsdato", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ExpirationDate, new { htmlAttributes = new { @class = "form-control", @id = "exp_date" } })
+                @Html.ValidationMessageFor(model => model.ExpirationDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.QuantityOriginal, "Antall opprinnelig", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.QuantityOriginal, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.QuantityOriginal, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.QuantityLeft, "Antall gjenværende", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.QuantityLeft, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.QuantityLeft, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Information, "Kommentar", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Information, new { @class = "form-control", @rows = "5" })
+                @Html.ValidationMessageFor(model => model.Information, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Lagre" class="btn btn-success" />
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.ExpirationDate, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.ExpirationDate, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.ExpirationDate, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.QuantityOriginal, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.QuantityOriginal, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.QuantityOriginal, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.QuantityLeft, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.QuantityLeft, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.QuantityLeft, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" />
-        </div>
-    </div>
-</div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    <button type="button" class="btn btn-primary m-0" onclick="location.href='@Url.Action("Index","DepotRecords")'">Tilbake til oversikten</button>
 </div>
 
+<script>
+    $(function () {
+        $('input[type = "radio"]').change(function () {
+            if ($(this).val() == 'YES') {
+                $("#exp_date").prop('disabled', false);
+            } else {
+                $("#exp_date").prop('disabled', true);
+                $("#exp_date").val("");
+            }
+        });
+    });
 
+    $(document).ready(function () {
+        $('#form').on('submit', function (e) {
+            e.preventDefault();
+            var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            var checked = $('input[name="expiration"]:checked').val();
+            if (checked == "NO") {
+                this.submit();
+            }
+            else if ($('#exp_date').val().match(dateRegex) && checked == "YES") {
+                this.submit();
+            }
+            else {
+                alert("Skriv inn riktig utløpsdato!");
+            }
+
+        });
+    });
+</script>
+
+@*this section must be here in order to enable client side validation*@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

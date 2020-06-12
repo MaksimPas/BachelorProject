@@ -3,11 +3,52 @@
     ViewBag.Title = "Admin";
 }
 
-<h2>Admin</h2>
+<h2>Administrator</h2>
+<br />
 
-@Html.ActionLink("Se brukere", "../Users");
-<br />
-@Html.ActionLink("Se typer utstyr", "../Equipments");
-<br />
-@Html.ActionLink("Se lageret", "../DepotRecords");
+<section>
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="jumbotron">
+                    <h1>@Html.ActionLink("Se brukere","Index","Users")</h1>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="jumbotron">
+                    <h1>@Html.ActionLink("Se typer utstyr","Index","Equipments")</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="jumbotron">
+                    <h1>@Html.ActionLink("Se lageret","Index","DepotRecords")</h1>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="jumbotron">
+                    <h1>@Html.ActionLink("Forbrukerlogg","Index","LogRecords")</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@*<script>
+    $(function () {
+        $("#button").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "../SendEmail/Send",
+                success: function (data) {
+                    $('#result').html(data);
+                }
+            });
+        });
+    });
+</script>*@
+
+<div id="update"></div>
 

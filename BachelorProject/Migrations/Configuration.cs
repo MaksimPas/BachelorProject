@@ -51,28 +51,39 @@ namespace BachelorProject.Migrations
                         Email = "admin@rodekors.com",
                         FirstName = "Micah",
                         LastName = "Lehmann",
-                        UserName = "admin@rodekors.com"
+                        PhoneNumber = "44444444",
+                        UserName = "admin@rodekors.com",
+                        DateOfRecord = DateTime.Today
                     },
                      "admin123"
-                    ) ;
+                    );
             }
 
-            IdentityResult result;
-            result = userManager.AddToRole(userManager.FindByEmail("admin@rodekors.com").Id, roleName3);
+            IdentityResult result = userManager.AddToRole(userManager.FindByEmail("admin@rodekors.com").Id, roleName3);
 
             //Seeding equipment
             //NB! Don't need to specify ID upon inserting due to IDENTITY!
             //HOWEVER ID need to be specified upon updating the row. 
-            context.Equipments.AddOrUpdate(new Equipment { Id = 1, NameAndType = "Hansker S"}) ;
-            context.Equipments.AddOrUpdate(new Equipment { Id = 2, NameAndType = "Hansker M"});
+
+            context.Equipments.AddOrUpdate(new Equipment { Id = 1, NameAndType = "Hansker S" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 2, NameAndType = "Hansker M" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 3, NameAndType = "Sprøyte 10mL" });
             context.SaveChanges();
 
             //Seeding some depot records
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 1, EquipmentCodeId = 1, ExpirationDate = new DateTime(2020, 3, 14), QuantityOriginal = 50, QuantityLeft = 30 });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 2, EquipmentCodeId = 1, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30 });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 3, EquipmentCodeId = 2, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30 });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 1, EquipmentCodeId = 1, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 3, 14), QuantityOriginal = 50, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 2, EquipmentCodeId = 1, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 3, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 4, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = null, QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 5, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = null, QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
             context.SaveChanges();
 
+            //seeding some log records
+            string userId = userManager.FindByEmail("admin@rodekors.com").Id;
+            context.LogRecords.AddOrUpdate(new LogRecord { Id = 1, UserId = userId, DateOfRecord = new DateTime(2020, 3, 13, 14, 14, 14), Action = LogAction.FORBRUK, InfoMessage = "Seeding init test record" });
+            context.LogRecords.AddOrUpdate(new LogRecord { Id = 2, UserId = userId, DateOfRecord = new DateTime(2020, 3, 13, 14, 14, 15), Action = LogAction.FORBRUK, InfoMessage = "Seeding init test record" });
+            context.LogRecords.AddOrUpdate(new LogRecord { Id = 3, UserId = userId, DateOfRecord = new DateTime(2020, 3, 13, 14, 14, 16), Action = LogAction.FORBRUK, InfoMessage = "Seeding init test record" });
+            context.SaveChanges();
         }
     }
 

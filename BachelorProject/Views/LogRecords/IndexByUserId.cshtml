@@ -1,0 +1,138 @@
+﻿@*upcast IPagedList*@
+@model IEnumerable<BachelorProject.Models.LogRecord>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Oversikt";
+}
+<h2>Oversikt over ditt forbruk</h2>
+<br />
+<div class="container">
+    <br />
+    <div class="form-group has-feedback has-search">
+        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+        @Html.TextBox("searchParameter", "", new { @id = "search", @class = "form-control", @autofocus = "autofocus", @placeholder = "Søk" })
+
+    </div>
+    <br />
+    <div id="tableDiv" class="table-responsive">
+        @if (Model.Count() <= 0)
+        {
+            <div class="text-center">
+                <br />
+                <p> Ingen data... </p>
+            </div>
+        }
+        else
+        {
+            <table class="table table-striped table-responsive-md btn-table w-auto">
+                <tr>
+                    <th>
+                        <div class="table_cell">
+                            @Ajax.ActionLink("Dato", "UpdateIndexByUserId",
+                                new
+                                {
+                                    sortColumn = Html.DisplayNameFor(model => model.DateOfRecord),
+                                    sortOrder = "ASC"
+                                },
+                                new AjaxOptions
+                                {
+                                    HttpMethod = "GET",
+                                    UpdateTargetId = "tableDiv"
+                                })
+                            <i class="fa fa-fw fa-sort"></i>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="table_cell">
+                            @Ajax.ActionLink("Transaksjonstype", "UpdateIndexByUserId",
+                                new
+                                {
+                                    sortColumn = Html.DisplayNameFor(model => model.Action),
+                                    sortOrder = "ASC"
+                                },
+                                new AjaxOptions
+                                {
+                                    HttpMethod = "GET",
+                                    UpdateTargetId = "tableDiv"
+                                })
+                            <i class="fa fa-fw fa-sort"></i>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="table_cell">
+                            @Ajax.ActionLink("Info", "UpdateIndexByUserId",
+                                new
+                                {
+                                    sortColumn = Html.DisplayNameFor(model => model.InfoMessage),
+                                    sortOrder = "ASC"
+                                },
+                                new AjaxOptions
+                                {
+                                    HttpMethod = "GET",
+                                    UpdateTargetId = "tableDiv"
+                                })
+                            <i class="fa fa-fw fa-sort"></i>
+                        </div>
+                    </th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfRecord)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Action)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InfoMessage)
+                </td>
+            </tr>
+                }
+            </table>
+            <br />
+
+
+            var pagedList = Model as PagedList.IPagedList<BachelorProject.Models.LogRecord>;
+
+            <p>Side  @(pagedList.PageCount < pagedList.PageNumber ? 0 : pagedList.PageNumber) av @pagedList.PageCount </p>
+
+            @Html.PagedListPager(pagedList,
+                         page => Url.Action("UpdateIndex", "DepotRecords",
+                         new
+                         {
+                             page
+                         }),
+                         PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
+                            new AjaxOptions()
+                            {
+                                HttpMethod = "GET",
+                                UpdateTargetId = "tableDiv"
+                            }))
+        }
+
+    </div>
+</div>
+
+
+
+
+<script>
+    $(function () {
+        $("#search").keyup(function () {
+            $.ajax({
+                type: "GET",
+                url: "/LogRecords/UpdateIndexByUserId",
+                data:
+                {
+                    searchParameter: $("#search").val()
+                },
+                success: function (data) {
+                    $('#tableDiv').html(data);
+                }
+            });
+        });
+    });
+</script>
+

@@ -10,22 +10,161 @@ using System.Web.Mvc;
 using BachelorProject.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.IO;
+using System.Net.Mail;
+using System.Collections.Specialized;
+using System.Web.Routing;
+using PagedList; //pagination
+using PagedList.EntityFramework; // pagination async: ToPagedListAsync()
+using Microsoft.AspNet.Identity;
+using System.Globalization;
 
 namespace BachelorProject.Controllers
 {
+    [Authorize]
     public class DepotRecordsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private readonly ApplicationDbContext db;
+        private readonly UserStore<ApplicationUser> us;
+        private readonly ApplicationUserManager userManager;
+        public DepotRecordsController()
+        {
+            db = new ApplicationDbContext();
+            us = new UserStore<ApplicationUser>(db);
+            userManager = new ApplicationUserManager(us);
+        }
+
+
+        //protected override void Initialize(RequestContext requestContext)
+        //{
+        //    base.Initialize(requestContext);
+        //    string cultureInfo = "nb-NO";
+        //    System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(cultureInfo);
+        //    System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(cultureInfo);
+        //    base.Initialize(requestContext);
+        //}
 
         //NB!!
-        //Create a view model and use it --> much more convenient
+        //Can create a view model and use it --> much more convenient
 
         // GET: DepotRecords
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Index()
         {   
             var depotRecords = db.DepotRecords.Include(d => d.Equipment);
-            return View(await depotRecords.ToListAsync());
+
+            ViewBag.searchParameter = "";
+
+            int pageSize = 10;
+            int pageNumber = 1;
+            return View(await depotRecords.OrderBy(record => record.Id).ToPagedListAsync(pageNumber,pageSize));
+        }
+
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult> UpdateIndex(string searchParameter, int? page, string sortColumn, string sortOrder)
+        {
+            int pageNumber = (page ?? 1);
+            int pageSize = 10;
+
+            //Either access parameter like this:
+            //var par = Request.QueryString["searchParameter"];
+            //Or like this:
+            //string par;
+
+            //anonymous object could be passed as json:
+            //var result = from e in db.DepotRecords
+            //             where e.Equipment.NameAndType.Contains(par)
+            //             select new
+            //             {
+            //                 e.Equipment.NameAndType,
+            //                 e.ExpirationDate,
+            //                 e.QuantityOriginal,
+            //                 e.QuantityLeft
+            //             };
+
+            var result = db.DepotRecords.Include(d => d.Equipment);
+
+            //filtering the query
+            if (searchParameter != null && searchParameter != "")
+            {
+                ViewBag.searchParameter = searchParameter;
+                result = result.Where(d => d.Equipment.NameAndType.Contains(searchParameter));
+            }
+
+            //sorting the query
+            ViewBag.sortColumn = sortColumn; //this can be null
+            ViewBag.sortOrder = sortOrder; //this can be null
+            switch (sortColumn)
+            {
+                case "NameAndType":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.Equipment.NameAndType);
+                        ViewBag.newSortOrderForNameAndType = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.Equipment.NameAndType);
+                        ViewBag.newSortOrderForNameAndType = "ASC";
+                    }
+                    break;
+                case "DateOfRecord":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.DateOfRecord);
+                        ViewBag.newSortOrderForDateOfRecord = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.DateOfRecord);
+                        ViewBag.newSortOrderForDateOfRecord = "ASC";
+                    }
+                    break;
+                case "ExpirationDate":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.ExpirationDate);
+                        ViewBag.newSortOrderForExpirationDate = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.ExpirationDate);
+                        ViewBag.newSortOrderForExpirationDate = "ASC";
+                    }
+                    break;
+                case "QuantityOriginal":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.QuantityOriginal);
+                        ViewBag.newSortOrderForQuantityOriginal = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.QuantityOriginal);
+                        ViewBag.newSortOrderForQuantityOriginal = "ASC";
+                    }
+                    break;
+                case "QuantityLeft":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.QuantityLeft);
+                        ViewBag.newSortOrderForQuantityLeft = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.QuantityLeft);
+                        ViewBag.newSortOrderForQuantityLeft = "ASC";
+                    }
+                    break;
+                default:
+                    result = result.OrderBy(s => s.Id);
+                    break;
+            }
+
+
+            var viewResult = await result.ToPagedListAsync(pageNumber, pageSize);
+            return PartialView("UpdateIndex", viewResult as IEnumerable<DepotRecord>);
         }
 
         // GET: DepotRecords/Details/5
@@ -36,7 +175,8 @@ namespace BachelorProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DepotRecord depotRecord = await db.DepotRecords.FindAsync(id);
+            var depotRecord = (await db.DepotRecords.Include(d => d.Equipment).ToListAsync())
+                              .Find(record => record.Id == id);
             if (depotRecord == null)
             {
                 return HttpNotFound();
@@ -58,16 +198,18 @@ namespace BachelorProject.Controllers
         [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "EquipmentCodeId,ExpirationDate,QuantityOriginal")] DepotRecord depotRecord)
+        public async Task<ActionResult> Create([Bind(Include = "EquipmentCodeId,ExpirationDate,QuantityOriginal,Information")] DepotRecord depotRecord)
         {
-            depotRecord.QuantityLeft = depotRecord.QuantityOriginal;
             if (ModelState.IsValid)
             {
+                depotRecord.QuantityLeft = depotRecord.QuantityOriginal;
+                depotRecord.DateOfRecord = DateTime.Now;
                 db.DepotRecords.Add(depotRecord);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View("Index");
+            ViewBag.selectList = new SelectList(db.Equipments, "Id", "NameAndType");
+            return View(depotRecord);
         }
 
         // GET: DepotRecords/Edit/5
@@ -91,15 +233,20 @@ namespace BachelorProject.Controllers
         [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,EquipmentCodeId,ExpirationDate,QuantityOriginal,QuantityLeft")] DepotRecord depotRecord)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,EquipmentCodeId,ExpirationDate,DateOfRecord,QuantityOriginal,QuantityLeft,Information")] DepotRecord depotRecord)
         {
+            if (depotRecord.QuantityLeft > depotRecord.QuantityOriginal)
+            {
+                ModelState.AddModelError(string.Empty, "Gjenværende antallet kan ikke være større enn det opprinnelige antallet!");
+                ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType", depotRecord.EquipmentCodeId);
+                return View(depotRecord);
+            }
             if (ModelState.IsValid)
             {
                 db.Entry(depotRecord).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-
             ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType", depotRecord.EquipmentCodeId);
             return View(depotRecord);
         }
@@ -112,7 +259,8 @@ namespace BachelorProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DepotRecord depotRecord = await db.DepotRecords.FindAsync(id);
+            var depotRecord = (await db.DepotRecords.Include(d => d.Equipment).ToListAsync())
+                              .Find(record => record.Id == id);
             if (depotRecord == null)
             {
                 return HttpNotFound();
@@ -132,7 +280,7 @@ namespace BachelorProject.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -142,65 +290,114 @@ namespace BachelorProject.Controllers
             base.Dispose(disposing);
         }
 
-        [Authorize(Roles = "admin,worker")]
+        [Authorize(Roles = "worker")]
         public ActionResult ReduceQuantity()
         {
+            if (TempData["StatusMessage"] != null)
+            {
+                ViewBag.StatusMessage = TempData["StatusMessage"].ToString();
+            }
             ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
-            return PartialView();
+            return View();
         }
 
-        [Authorize(Roles = "admin,worker")]
+        [Authorize(Roles = "worker")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ReduceQuantity(ReduceAmountViewModel formCollection)
+        public async Task<ActionResult> ReduceQuantity([Bind(Include = "EquipmentId,ReduceQuantity")] ReduceAmountViewModel formCollection)
         {
-            int quantityToReduce = formCollection.ReduceQuantity;
-            if (formCollection != null)
+            if (ModelState.IsValid)
             {
-                var depotRecords = db.DepotRecords.Where(record => record.EquipmentCodeId == formCollection.EquipmentId);
-                foreach (var record in depotRecords)
+                int quantityToReduce = formCollection.ReduceQuantity;
+
+                string nameAndType = db.Equipments
+                                       .Where(record => record.Id == formCollection.EquipmentId)
+                                       .FirstOrDefault()
+                                       .NameAndType;
+                if (formCollection != null)
                 {
-                    if (record.QuantityLeft >= quantityToReduce)
+                    var depotRecords = db.DepotRecords
+                                         .Where(record => record.EquipmentCodeId == formCollection.EquipmentId)
+                                         .OrderBy(record => record.ExpirationDate);
+                    if (depotRecords.Count()==0)
                     {
-                        record.QuantityLeft -= quantityToReduce;
-                        break;
+                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi {0} finnes ikke på lageret",
+                                                                nameAndType,
+                                                                quantityToReduce
+                                                                ));
+                        ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+                        return View(formCollection);
                     }
-                    quantityToReduce -= record.QuantityLeft;
-                    record.QuantityLeft = 0;
+                    int totalQuantity = 0;
+                    foreach (var record in depotRecords)
+                    {
+                        totalQuantity += record.QuantityLeft;
+                    }
+                    if (totalQuantity < quantityToReduce)
+                    {
+                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi det er kun {2} enheter på lageret",
+                                                                nameAndType,
+                                                                quantityToReduce,
+                                                                totalQuantity));
+                        ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+                        return View(formCollection);
+                    }
+
+                    int totalQuantityLeft = totalQuantity - quantityToReduce;
+                    
+                    //could also use DepotRecord/Edit here... 
+                    foreach (var record in depotRecords)
+                    {
+                        if (record.QuantityLeft >= quantityToReduce)
+                        {
+                            record.QuantityLeft -= quantityToReduce;
+                            break;
+                        }
+                        quantityToReduce -= record.QuantityLeft;
+                        record.QuantityLeft = 0;
+                    }
+
+                    await db.SaveChangesAsync();
+                    string userId = User.Identity.GetUserId();
+                    //could do it like this:
+                    //(new LogRecordsController())
+                    //But then newly created controller would miss the essential controller info in MVC like User, HttpContext, Request , Server etc:
+                    ////https://stackoverflow.com/questions/16870413/how-to-call-another-controller-action-from-a-controller-in-mvc
+
+                    //if you want to invoke method from another controller, this is the way:
+                    var controller = DependencyResolver.Current.GetService<LogRecordsController>();
+                    controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
+                    controller.Create(
+                        new LogRecord
+                        {
+                            UserId = userId,
+                            DateOfRecord = DateTime.Now,
+                            Action = LogAction.FORBRUK,
+                            InfoMessage = string.Format(
+                                                        "{0} ble redusert med {1} enheter. Antall igjen: {2}",
+                                                        nameAndType,
+                                                        formCollection.ReduceQuantity,
+                                                        totalQuantityLeft
+                                                        )
+                        });
+                    await db.SaveChangesAsync();
+                    //ViewBag is not contained when calling to new action. Must use TempData to transfer data between controllers
+                    //see https://stackoverflow.com/questions/14497711/set-viewbag-before-redirect
+                    TempData["StatusMessage"] = string.Format(
+                                                        "Suksess! {0} ble redusert med {1} enheter. Antall igjen: {2}",
+                                                        nameAndType,
+                                                        formCollection.ReduceQuantity,
+                                                        totalQuantityLeft
+                                                        );
+                    return RedirectToAction("ReduceQuantity");
                 }
-                await db.SaveChangesAsync();
-                return RedirectToAction("../");
             }
-            return RedirectToAction("../");
+            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+            return View(formCollection);
         }
-
-        //[Authorize(Roles = "admin")]
-        public async Task<ActionResult> Search()
-        {
-            var par = Request.QueryString["searchParameter"];
-
-            //anonymous object could be passed as json:
-            //var result = from e in db.DepotRecords
-            //             where e.Equipment.NameAndType.Contains(par)
-            //             select new
-            //             {
-            //                 e.Equipment.NameAndType,
-            //                 e.ExpirationDate,
-            //                 e.QuantityOriginal,
-            //                 e.QuantityLeft
-
-            //             };
-
-            var result = await db.DepotRecords
-                                 .Include(d => d.Equipment)
-                                 .Where(record => record.Equipment.NameAndType.Contains(par))
-                                 .ToListAsync();
-                            
-
-            return PartialView("SearchResult",result);
-        }
-
-
-
+        
     }
+
 }
+
+

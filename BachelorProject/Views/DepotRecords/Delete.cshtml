@@ -1,56 +1,86 @@
 ﻿@model BachelorProject.Models.DepotRecord
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Slett";
 }
 
-<h2>Delete</h2>
+<div class="container" style="word-break: break-word">
+    
+        <h2>Er du sikker på at du vil slette dette?</h2>
+        <hr />
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>DepotRecord</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Equipment.NameAndType)
-        </dt>
+        <dl class="dl-horizontal form-horizontal">
+            <div class="form-group">
+                <dt>
+                    <span>Navn og type</span>
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Equipment.NameAndType)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Equipment.NameAndType)
+                </dd>
+            </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ExpirationDate)
-        </dt>
+            <div class="form-group">
+                <dt>
+                    <span>Opprettingsdato</span>
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ExpirationDate)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.DateOfRecord)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Utløpsdato</span>
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.QuantityOriginal)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ExpirationDate)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Antall opprinnelig</span>
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.QuantityOriginal)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.QuantityOriginal)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Antall igjen</span>
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.QuantityLeft)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.QuantityLeft)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
+                    <span>Kommentar</span>
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.QuantityLeft)
-        </dd>
+                <dd style="width: 40%">
+                    @Html.DisplayFor(model => model.Information)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dd>
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
 
-    </dl>
-
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
-        </div>
-    }
+                        <div class="form-actions">
+                            <input type="submit" value="Slett" class="btn btn-danger" />
+                        </div>
+                    }
+                </dd>
+            </div>
+        </dl>
+    
 </div>
+<div>
+    <button type="button" class="btn btn-primary m-0" onclick="location.href='@Url.Action("Index","DepotRecords")'">Tilbake til oversikten</button>
+</div>
+

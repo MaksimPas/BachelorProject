@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<BachelorProject.Models.DepotRecord>
 
-<table class="table">
+<h1>Hei!</h1>
+<h3>Følgende utstyr går snart ut på dato:</h3>
+
+<table class="table" border="1">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Equipment.NameAndType)
@@ -14,7 +17,6 @@
         <th>
             @Html.DisplayNameFor(model => model.QuantityLeft)
         </th>
-        <th></th>
     </tr>
 
     @foreach (var item in Model)
@@ -32,12 +34,8 @@
             <td>
                 @Html.DisplayFor(modelItem => item.QuantityLeft)
             </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
         </tr>
     }
 
 </table>
+

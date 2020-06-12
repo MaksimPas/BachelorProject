@@ -55,15 +55,16 @@ namespace BachelorProject
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            //from Facebook Developers web:
+            app.UseFacebookAuthentication(
+               appId: "498381907733136",
+               appSecret: "9743d9cf8080e88bd6c415115e43ea31");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "719332707606-nl97nloamlg4tggmi9o0ejcvr11aig30.apps.googleusercontent.com",
+                ClientSecret = "DkodUgq2TJKZIOd6h6Ltcrub"
+            });
         }
     }
 }

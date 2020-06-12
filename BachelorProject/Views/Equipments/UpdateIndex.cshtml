@@ -1,0 +1,76 @@
+﻿@*upcast IPagedList*@
+@model IEnumerable<BachelorProject.Models.Equipment>
+@using PagedList.Mvc;
+
+    @if (Model.Count() <= 0)
+    {
+        <div class="text-center">
+            <br />
+            <p> Ingen data... </p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped table-responsive-md btn-table w-auto">
+            <tr>
+                <th>
+                    <div class="table_cell">
+                        @Ajax.ActionLink("Navn og Type", "UpdateIndex",
+                            new
+                            {
+                                sortColumn = Html.DisplayNameFor(model => model.NameAndType),
+                                sortOrder = ViewBag.newSortOrderForNameAndType ?? "ASC",
+                                searchParameter = ViewBag.searchParameter
+                            },
+                            new AjaxOptions
+                            {
+                                HttpMethod = "GET",
+                                UpdateTargetId = "tableDiv"
+                            })
+                        <i class="fa fa-fw fa-sort"></i>
+                    </div>
+                </th>
+                <th>
+                    <div class="table_cell">
+                        Valg
+                    </div>
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NameAndType)
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm m-0" onclick="location.href='@Url.Action("Edit","Equipments",new { id = item.Id })'">Rediger</button>
+                        <button type="button" class="btn btn-info btn-sm m-0" onclick="location.href='@Url.Action("Details","Equipments",new { id = item.Id })'">Detaljer</button>
+                        <button type="button" class="btn btn-danger btn-sm m-0" onclick="location.href='@Url.Action("Delete","Equipments",new { id = item.Id })'">Slett</button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+        <br />
+
+        var pagedList = Model as PagedList.IPagedList<BachelorProject.Models.Equipment>;
+        <p>Side  @(pagedList.PageCount < pagedList.PageNumber ? 0 : pagedList.PageNumber) av @pagedList.PageCount </p>
+     
+
+        @Html.PagedListPager(pagedList,
+                                     page => Url.Action("UpdateIndex", "DepotRecords",
+                                        new
+                                        {
+                                            page,
+                                            searchParameter = ViewBag.searchParameter,
+                                            sortColumn = ViewBag.sortColumn,
+                                            sortOrder = ViewBag.sortOrder
+                                        }),
+                                        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
+                                        new AjaxOptions()
+                                        {
+                                            HttpMethod = "GET",
+                                            UpdateTargetId = "tableDiv"
+                                        }))
+    }

@@ -1,0 +1,71 @@
+﻿@model BachelorProject.Models.EditProfileInfoViewModel
+
+@{
+    ViewBag.Title = "Rediger";
+}
+
+<h2>Endre informasjon</h2>
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <p class="text-danger"> Feilmelding: @Html.Raw(ViewBag.ErrorMessage) </p>
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName, "Fornavn", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName, "Etternavn", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Phone, "Telefon", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email, "E-post", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Lagre" class="btn btn-success" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    <button type="button" class="btn btn-primary m-0" onclick="location.href='@Url.Action("Index","Manage")'">Tilbake til Innstillinger</button>
+</div>
+
+
+
+@*this section must be here in order to enable client side validation*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

@@ -86,6 +86,16 @@ namespace BachelorProject
             }
             return manager;
         }
+
+        public string GetFirstName(string userId)
+        {
+            return this.FindById(userId).FirstName;
+        }
+
+        public string GetLastName(string userId)
+        {
+            return this.FindById(userId).LastName;
+        }
     }
 
     // Configure the application sign-in manager which is used in this application.

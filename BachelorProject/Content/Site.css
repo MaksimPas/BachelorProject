@@ -22,3 +22,16 @@ select,
 textarea {
     max-width: 280px;
 }
+
+#search {
+        max-width: 100% !important;
+}
+
+.table_cell {
+    display: inline;
+    white-space: nowrap;
+}
+
+button {
+    margin: 2px;
+}

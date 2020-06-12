@@ -8,20 +8,79 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using BachelorProject.Models;
+using PagedList; //pagination: ToPagedList()
+using PagedList.EntityFramework; // pagination async: ToPagedListAsync()
 
 namespace BachelorProject.Controllers
 {
+    [Authorize]
     public class EquipmentsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Equipments
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Index()
         {
-            return View(await db.Equipments.ToListAsync());
+            var equipment = db.Equipments;
+
+            ViewBag.searchParameter = "";
+            int pageSize = 10;
+            int pageNumber = 1;
+            return View(await equipment.OrderBy(record => record.Id).ToPagedListAsync(pageNumber, pageSize));
+        }
+
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult> UpdateIndex(string searchParameter, int? page, string sortColumn, string sortOrder)
+        {
+            int pageNumber = (page ?? 1);
+            int pageSize = 10;
+
+            IQueryable<Equipment> result;
+
+            //filtering the query
+            if (searchParameter != null && searchParameter != "")
+            {
+                ViewBag.searchParameter = searchParameter;
+                result = db.Equipments
+                            //filter
+                           .Where(d => d.NameAndType.Contains(searchParameter));
+            }
+            else
+            {
+                //searchParameter is null, i.e. no filter is specified
+                result = db.Equipments;
+            }
+
+            //sorting the query
+            ViewBag.sortColumn = sortColumn; //this can be null
+            ViewBag.sortOrder = sortOrder; //this can be null
+            switch (sortColumn)
+            {
+                case "NameAndType":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.NameAndType);
+                        ViewBag.newSortOrderForNameAndType = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.NameAndType);
+                        ViewBag.newSortOrderForNameAndType = "ASC";
+                    }
+                    break;
+                default:
+                    result = result.OrderBy(s => s.Id);
+                    break;
+            }
+
+
+            var viewResult = await result.ToPagedListAsync(pageNumber, pageSize);
+            return PartialView("UpdateIndex", viewResult as IEnumerable<Equipment>);
         }
 
         // GET: Equipments/Details/5
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -37,6 +96,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: Equipments/Create
+        [Authorize(Roles = "admin")]
         public ActionResult Create()
         {
             return View();
@@ -45,6 +105,7 @@ namespace BachelorProject.Controllers
         // POST: Equipments/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "Id,NameAndType")] Equipment equipment)
@@ -60,6 +121,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: Equipments/Edit/5
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,6 +139,7 @@ namespace BachelorProject.Controllers
         // POST: Equipments/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,NameAndType")] Equipment equipment)
@@ -91,6 +154,7 @@ namespace BachelorProject.Controllers
         }
 
         // GET: Equipments/Delete/5
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -106,6 +170,7 @@ namespace BachelorProject.Controllers
         }
 
         // POST: Equipments/Delete/5
+        [Authorize(Roles = "admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)

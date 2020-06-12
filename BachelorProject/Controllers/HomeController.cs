@@ -1,4 +1,5 @@
 ﻿using BachelorProject.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace BachelorProject.Controllers
         {
             if (Request.IsAuthenticated)
             {
-                return await returnUserView();
+                return await returnUserViewAsync();
             }
             else 
             {
@@ -37,23 +38,22 @@ namespace BachelorProject.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Om";
 
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Kontantinformasjon";
 
             return View();
         }
 
         [Authorize(Roles = "admin,worker,new_user")]
-        public async Task<ActionResult> returnUserView()
+        public async Task<ActionResult> returnUserViewAsync()
         {
-            string userEmail = HttpContext.User.Identity.Name;
-            string userId = (await userManager.FindByEmailAsync(userEmail)).Id;
+            string userId = User.Identity.GetUserId();
             string userRole = (await userManager.GetRolesAsync(userId)).First();
             switch (userRole)
             {

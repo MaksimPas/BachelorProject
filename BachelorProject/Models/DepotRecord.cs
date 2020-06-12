@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using BachelorProject.CustomAttributes;
+using BachelorProject.Properties;
 
 namespace BachelorProject.Models
 {
@@ -15,33 +17,38 @@ namespace BachelorProject.Models
         public int Id { get; set; }
 
         [ForeignKey("Equipment")]
-        [Index("IX_EquiplemtIdANDExpDate", 1, IsUnique = true)]
         public int EquipmentCodeId { get; set; }
         public Equipment Equipment { get; set; }
 
+        //[DataType(DataType.Date, ErrorMessage = "Feil dato")
+        
+        [DataType(DataType.Date, ErrorMessageResourceName = "DateErrror", ErrorMessageResourceType = typeof(ValidationResources))]
+        //DataFormatString must be ISO standard {0:yyyy-MM-dd}, see https://stackoverflow.com/questions/31097748/date-does-not-display-from-model-on-html-input-type-date
+        //otherwise value="{date}" will not work in VIEW
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ConvertEmptyStringToNull =true,NullDisplayText = "Ingen utløpsdato", ApplyFormatInEditMode = true)]
+        public DateTime? ExpirationDate { get; set; } //using nullable type because the field can be null
 
-        [Index("IX_EquiplemtIdANDExpDate", 2 , IsUnique = true)]
-        [Display(Name = "Insert Expiration Date")]
-        [Required(ErrorMessage = "You must specify the date of the event!")]
-        [DataType(DataType.Date, ErrorMessage = "Wrong date")]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime ExpirationDate { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime DateOfRecord { get; set; }
+        
+        [Required(ErrorMessage = "Feltet Antall er obligatorisk!")]
+        [NotNegativeNumber(ErrorMessage = "Verdien må være større enn 0")]
+        public int QuantityOriginal { get; set; }
+        [Required]
+        public int QuantityLeft { get; set; }
 
+        public string Information { get; set; } //can be used to write comments
 
         //not necessary yet:
         //FK
-        //public int DeliveryId { get; set; }
+        //public int DistributorId { get; set; }
 
-        //public Delivery Delivery { get; set; }
+        //public Distributor Distributor { get; set; }
 
         //not necessary yet:
         //FK
         //public int IsAtLocationId { get; set; }
 
         //public Location Location { get; set; }
-
-        public int QuantityOriginal { get; set; }
-
-        public int QuantityLeft { get; set; }
     }
 }

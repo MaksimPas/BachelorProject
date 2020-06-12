@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BachelorProject.CustomAttributes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BachelorProject.Models
@@ -6,8 +7,25 @@ namespace BachelorProject.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "E-post")]
         public string Email { get; set; }
+
+        [Required]
+        [Name]
+        [Display(Name = "Fornavn")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Name]
+        [Display(Name = "Etternavn")]
+        public string LastName { get; set; }
+
+        [Required]
+        [NorwegianPhoneNumber(ErrorMessage = "Telefon har ugyldig format")]
+        [Display(Name = "Telefon")]
+        public string Phone { get; set; }
+
+
     }
 
     public class ExternalLoginListViewModel
@@ -29,11 +47,11 @@ namespace BachelorProject.Models
         public string Provider { get; set; }
 
         [Required]
-        [Display(Name = "Code")]
+        [Display(Name = "Kode")]
         public string Code { get; set; }
         public string ReturnUrl { get; set; }
 
-        [Display(Name = "Remember this browser?")]
+        [Display(Name = "Husk denne nettleseren?")]
         public bool RememberBrowser { get; set; }
 
         public bool RememberMe { get; set; }
@@ -42,42 +60,57 @@ namespace BachelorProject.Models
     public class ForgotViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "E-post")]
         public string Email { get; set; }
     }
 
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "E-post")]
         [EmailAddress]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Passord")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "Husk meg?")]
         public bool RememberMe { get; set; }
     }
 
     public class RegisterViewModel
     {
         [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Fornavn")]
+        [Name(ErrorMessage = "Fornavnet kan inneholde kun bokstaver")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Etternavn")]
+        [Name(ErrorMessage = "Etternavnet kan inneholde kun bokstaver")]
+        public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress(ErrorMessage = "E-post har ugyldig format")]
+        [Display(Name = "E-post")]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [NorwegianPhoneNumber(ErrorMessage = "Telefon har ugyldig format")]
+        [Display(Name = "Telefon")]
+        public string Phone { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "{0}et må inneholde minst {2} tegn.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Passord")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Bekreft passordet")]
+        [Compare("Password", ErrorMessage = "Passord og brekreft passord må være like.")]
         public string ConfirmPassword { get; set; }
     }
 
@@ -85,18 +118,18 @@ namespace BachelorProject.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "E-post")]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0}et må inneholde minst {2} tegn.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Passord")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Bekreft passordet")]
+        [Compare("Password", ErrorMessage = "Passord og brekreft passord må være like.")]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
@@ -106,7 +139,7 @@ namespace BachelorProject.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "E-post")]
         public string Email { get; set; }
     }
 }

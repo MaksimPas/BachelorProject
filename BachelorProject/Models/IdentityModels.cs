@@ -1,6 +1,10 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BachelorProject.CustomAttributes;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -19,6 +23,8 @@ namespace BachelorProject.Models
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public DateTime DateOfRecord { get; set; } //not null
+        public ICollection<LogRecord> LogRecords { get; set; }
     }
 
     class ApplicationRole : IdentityRole
@@ -35,19 +41,16 @@ namespace BachelorProject.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+        //specify connection name in web.config here
+        public ApplicationDbContext(): base("DefaultConnection", throwIfV1Schema: false)
         {
         }
-
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
-
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<DepotRecord> DepotRecords  { get; set; }
-
-        
+        public DbSet<LogRecord> LogRecords { get; set; }
     }
 }

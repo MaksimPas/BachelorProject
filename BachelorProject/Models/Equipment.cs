@@ -16,15 +16,16 @@ namespace BachelorProject.Models
         [Column(TypeName = "VARCHAR")]
         [StringLength(300)]
         [Index("IX_NameAndType", 1, IsUnique = true)]
+        [Required(ErrorMessage = "Feltet 'Navn og Type' er obligatorisk")]
         public string NameAndType { get; set; }
-
+        public ICollection<DepotRecord> DepotRecord { get; set; }
 
         ////Can be applied later:
         //[Column(TypeName = "VARCHAR")]
         //[StringLength(300)]
         //[Index("IX_NameAndType", 2, IsUnique = true)]
         //public string Type { get; set; }
-
-        public ICollection<DepotRecord> DepotRecord { get; set; }
     }
 }
+
+

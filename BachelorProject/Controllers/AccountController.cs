@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BachelorProject.Models;
+using System.Web.Routing;
 
 namespace BachelorProject.Controllers
 {
@@ -52,13 +53,28 @@ namespace BachelorProject.Controllers
             }
         }
 
+        protected override void Initialize(RequestContext requestContext)
+        {
+            //read about localization here:
+            //https://medium.com/@hoda_sedighi/localize-validation-error-message-using-data-annotation-in-asp-net-boilerplate-fbd4a0371f2e
+            string cultureInfo = "nb-NO";
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(cultureInfo);
+            System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(cultureInfo);
+            base.Initialize(requestContext);
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             ViewBag.ReturnUrl = returnUrl;
             return View();
+            
         }
 
         //
@@ -68,6 +84,10 @@ namespace BachelorProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -86,7 +106,7 @@ namespace BachelorProject.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    ModelState.AddModelError("", "Feil brukernavn/passord.");
                     return View(model);
             }
         }
@@ -142,7 +162,7 @@ namespace BachelorProject.Controllers
             return View();
         }
 
-        //
+        
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
@@ -151,10 +171,25 @@ namespace BachelorProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser 
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    UserName = model.Email, 
+                    Email = model.Email,
+                    PhoneNumber = model.Phone,
+                    DateOfRecord = DateTime.Now
+                };
+                if (await UserManager.FindByEmailAsync(model.Email) != null)
+                {
+                    //then user exists sin the database
+                    ModelState.AddModelError("", string.Format("En bruker med e-postadresse {0} er allerede registrert!", model.Email));
+                    return View(model);
+                }
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    await UserManager.AddToRoleAsync(UserManager.FindByEmail(model.Email).Id, "new_user");
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -162,13 +197,14 @@ namespace BachelorProject.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                    await UserManager.AddToRoleAsync(UserManager.FindByEmail(model.Email).Id, "new_user");
                     return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
+                
+                else
+                {
+                    AddErrors(result);
+                }
             }
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -238,7 +274,6 @@ namespace BachelorProject.Controllers
             return code == null ? View("Error") : View();
         }
 
-        //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
@@ -320,71 +355,92 @@ namespace BachelorProject.Controllers
 
         //
         // GET: /Account/ExternalLoginCallback
-        //[AllowAnonymous]
-        //public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
-        //{
-        //    var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-        //    if (loginInfo == null)
-        //    {
-        //        return RedirectToAction("Login");
-        //    }
-
-        //    //Sign in the user with this external login provider if the user already has a login
-        //    var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
-        //    switch (result)
-        //    {
-        //        case SignInStatus.Success:
-        //            return RedirectToLocal(returnUrl);
-        //        case SignInStatus.LockedOut:
-        //            return View("Lockout");
-        //        case SignInStatus.RequiresVerification:
-        //            return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
-        //        case SignInStatus.Failure:
-        //        default:
-        //           //If the user does not have an account, then prompt the user to create an account
-        //            ViewBag.ReturnUrl = returnUrl;
-        //            ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-        //            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
-        //    }
-        //}
+        [AllowAnonymous]
+        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
+        {
+            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
+            if (loginInfo == null)
+            {
+                return RedirectToAction("Login");
+            }
+            
+            //Sign in the user with this external login provider if the user already has a login
+            var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    return RedirectToLocal(returnUrl);
+                case SignInStatus.LockedOut:
+                    return View("Lockout");
+                case SignInStatus.RequiresVerification:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
+                case SignInStatus.Failure:
+                    //write scenario here
+                    //return RedirectToLocal(returnUrl);
+                default:
+                    //If the user does not have an account, then prompt the user to create an account
+                    ViewBag.ReturnUrl = returnUrl;
+                    ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+            }
+        }
 
         //
         // POST: /Account/ExternalLoginConfirmation
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
-        //{
-        //    if (User.Identity.IsAuthenticated)
-        //    {
-        //        return RedirectToAction("Index", "Manage");
-        //    }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Manage");
+            }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Get the information about the user from the external login provider
-        //        var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-        //        if (info == null)
-        //        {
-        //            return View("ExternalLoginFailure");
-        //        }
-        //        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-        //        var result = await UserManager.CreateAsync(user);
-        //        if (result.Succeeded)
-        //        {
-        //            result = await UserManager.AddLoginAsync(user.Id, info.Login);
-        //            if (result.Succeeded)
-        //            {
-        //                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-        //                return RedirectToLocal(returnUrl);
-        //            }
-        //        }
-        //        AddErrors(result);
-        //    }
+            if (ModelState.IsValid)
+            {
+                // Get the information about the user from the external login provider
+                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+                if (await UserManager.FindByEmailAsync(model.Email) != null)
+                {
+                    //then user exists sin the database
+                    ViewBag.LoginProvider = info.Login.LoginProvider;
+                    ModelState.AddModelError("", string.Format("En bruker med e-postadresse {0} allerede er allerede registrert!", model.Email));
+                    return View(model);
+                }
+                if (info == null)
+                {
+                    return View("ExternalLoginFailure");
+                }
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    PhoneNumber = model.Phone,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DateOfRecord = DateTime.Now
+                };
+                var result = await UserManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    if (result.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        await UserManager.AddToRoleAsync(UserManager.FindByEmail(model.Email).Id, "new_user");
+                        return RedirectToLocal(returnUrl);
+                    }
+                }
+                else
+                {
+                    AddErrors(result);
+                }
+            }
 
-        //    ViewBag.ReturnUrl = returnUrl;
-        //    return View(model);
-        //}
+            ViewBag.ReturnUrl = returnUrl;
+            return View(model);
+        }
 
         //
         // POST: /Account/LogOff
