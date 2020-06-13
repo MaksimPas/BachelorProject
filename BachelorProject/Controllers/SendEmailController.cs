@@ -105,10 +105,14 @@ namespace BachelorProject.Controllers
             
             //customers wants to be notified 1 month in advance
             //LINQ doesnt understand C# code. must retrieve the entire collection and filer it here in this method
-            var toBeExpired = depotRecords.Where(record => (record.ExpirationDate != null) && (record.ExpirationDate >= DateTime.Today && record.ExpirationDate <= DateTime.Today.AddMonths(1)) )
+            var toBeExpired = depotRecords.Where(record => record.ExpirationDate != null) //disregarding equipment which does not have expiration date
+                                          .Where(record => record.ExpirationDate >= DateTime.Today) //expiration date must be greater or equal today
+                                          .Where(record => record.ExpirationDate <= DateTime.Today.AddMonths(1)) //expiration date must be smaller than date in 1 month from today
                                            //consider only those records which have not been depleted completely:
                                           .Where(record => record.QuantityLeft > 0);
-            var expired = depotRecords.Where(record => (record.ExpirationDate != null) && (record.ExpirationDate < DateTime.Today))
+
+            var expired = depotRecords.Where(record => record.ExpirationDate != null)//disregarding equipment which does not have expiration date
+                                      .Where(record => record.ExpirationDate < DateTime.Today) // expiration date must be smaller than today
                                       //consider only those records which have not been depleted:
                                       .Where(record => record.QuantityLeft > 0);
             //if both queries returned 0 elements then dont send email. 
@@ -138,7 +142,6 @@ namespace BachelorProject.Controllers
                                 "Navn og Type", "Utløpsdato", "Antall opprinnelig", "Antall igjen",borderStyle);
                 foreach (var item in toBeExpired)
                 {
-                    //sb.AppendFormat("<tr><td" + borderStyle + ">{0}</td><td" + borderStyle + ">{1}</td><td" + borderStyle + ">{2}</td><td" + borderStyle + ">{3}</td></tr>",
                     sb.AppendFormat("<tr><td {4}>{0}</td><td {4}>{1}</td><td {4}>{2}</td><td {4}>{3}</td></tr> ",
                                     item.Equipment.NameAndType,
                                     item.ExpirationDate.Value.ToShortDateString(),
@@ -155,7 +158,6 @@ namespace BachelorProject.Controllers
                 //Equipment which has already expired:
                 sb.AppendLine("<h3> Følgende utstyr har allerede gått ut på dato:</h3>");
                 sb.AppendLine("<table style='border: 1px solid black;border-collapse: collapse; width:100%;text-align:center;'>");
-                //sb.AppendFormat("<tr><th" + borderStyle + ">{0}</th><th" + borderStyle + ">{1}</th><th" + borderStyle + ">{2}</th><th" + borderStyle + ">{3}</th></tr> ",
                 sb.AppendFormat("<tr><th {4}>{0}</th><th {4}>{1}</th><th {4}>{2}</th><th {4}>{3}</th></tr> ",
                                 "Navn og Type", "Utløpsdato", "Antall opprinnelig", "Antall igjen",borderStyle);
                 foreach (var item in expired)
@@ -218,8 +220,8 @@ namespace BachelorProject.Controllers
             var trigger = TriggerBuilder.Create()
                                 .WithIdentity("trigger1", "group1")
                                 ////just to test:
-                                //.WithSchedule(SimpleScheduleBuilder.Create().WithIntervalInSeconds(5))
-                                .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(7, 0))
+                                .WithSchedule(SimpleScheduleBuilder.Create().WithIntervalInSeconds(5))
+                                //.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(7, 0))
                                 .StartNow()
                                 .Build();
             await sched.ScheduleJob(sendMailJob, trigger);
