@@ -175,7 +175,8 @@ namespace BachelorProject.Controllers
             try
             {
                 var senderEmail = new MailAddress("trondheimrodekors@gmail.com", "Trondheim Røde Kors");
-                var receiverEmail = new MailAddress("maksympas111@gmail.com", "Administrator"); //change recipient email
+                //var receiverEmail = new MailAddress("maksympas111@gmail.com", "Administrator"); //private email address for testing
+                var receiverEmail = new MailAddress("Trkh-depot@trondheim-redcross.no", "Administrator"); //recipient email
                 //remember to change password:
                 var password = "rodekors123";
                 var subject = "Påminning om utstyr som går ut på dato";
