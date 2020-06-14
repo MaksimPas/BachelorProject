@@ -194,6 +194,10 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SendEmailController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Migrations\202006140520467_Init.cs" />
+    <Compile Include="Migrations\202006140520467_Init.designer.cs">
+      <DependentUpon>202006140520467_Init.cs</DependentUpon>
+    </Compile>
     <Compile Include="Validation\CustomAttributes.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -340,6 +344,9 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\202006140520467_Init.resx">
+      <DependentUpon>202006140520467_Init.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\ValidationResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationResources.Designer.cs</LastGenOutput>
