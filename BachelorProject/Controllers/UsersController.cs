@@ -264,10 +264,17 @@ namespace BachelorProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(string id)
         {
-            ApplicationUser user = await userManager.FindByIdAsync(id);
-            db.Users.Remove(user);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(id);
+                db.Users.Remove(user);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)

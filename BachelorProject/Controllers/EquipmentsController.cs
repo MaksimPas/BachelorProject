@@ -112,9 +112,18 @@ namespace BachelorProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Equipments.Add(equipment);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Equipments.Add(equipment);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", "Noe gikk galt. Vennligst prøv igjen.");
+                    ModelState.AddModelError("", "Tips: utstyret kan ikke ha duplisert navn.");
+                    return View(equipment);
+                }
             }
 
             return View(equipment);
@@ -175,10 +184,17 @@ namespace BachelorProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Equipment equipment = await db.Equipments.FindAsync(id);
-            db.Equipments.Remove(equipment);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                Equipment equipment = await db.Equipments.FindAsync(id);
+                db.Equipments.Remove(equipment);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)

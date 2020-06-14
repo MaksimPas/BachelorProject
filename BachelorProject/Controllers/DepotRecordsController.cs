@@ -203,11 +203,19 @@ namespace BachelorProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                depotRecord.QuantityLeft = depotRecord.QuantityOriginal;
-                depotRecord.DateOfRecord = DateTime.Now;
-                db.DepotRecords.Add(depotRecord);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                try
+                {
+                    depotRecord.QuantityLeft = depotRecord.QuantityOriginal;
+                    depotRecord.DateOfRecord = DateTime.Now;
+                    db.DepotRecords.Add(depotRecord);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", "Noe gikk galt. Vennligst prøv igjen.");
+                    return View(depotRecord);
+                }
             }
             ViewBag.selectList = new SelectList(db.Equipments, "Id", "NameAndType");
             return View(depotRecord);
@@ -275,10 +283,17 @@ namespace BachelorProject.Controllers
         [Authorize(Roles = "admin,subAdmin")]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            DepotRecord depotRecord = await db.DepotRecords.FindAsync(id);
-            db.DepotRecords.Remove(depotRecord);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                DepotRecord depotRecord = await db.DepotRecords.FindAsync(id);
+                db.DepotRecords.Remove(depotRecord);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -308,92 +323,100 @@ namespace BachelorProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                int quantityToReduce = formCollection.ReduceQuantity;
-
-                string nameAndType = db.Equipments
-                                       .Where(record => record.Id == formCollection.EquipmentId)
-                                       .FirstOrDefault()
-                                       .NameAndType;
-                if (formCollection != null)
+                try
                 {
-                    var depotRecords = db.DepotRecords
-                                         .Where(record => record.EquipmentCodeId == formCollection.EquipmentId)
-                                         .ToList()
-                                         // workers can ONLY use equipment with valid expiration date. Discard expired equipment:
-                                         .Where(record => record.ExpirationDate >= DateTime.Today || record.ExpirationDate == null)
-                                         .OrderBy(record => record.ExpirationDate);
-                    
-                    if (depotRecords.Count()==0)
-                    {
-                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi {0} med gyldig utløpsdato ikke finnes på lageret",
-                                                                nameAndType,
-                                                                quantityToReduce
-                                                                ));
-                        ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
-                        return View(formCollection);
-                    }
-                    int totalQuantity = 0;
-                    foreach (var record in depotRecords)
-                    {
-                        totalQuantity += record.QuantityLeft;
-                    }
-                    if (totalQuantity < quantityToReduce)
-                    {
-                        ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi det er kun {2} enheter med gyldig utløpsdato på lageret",
-                                                                nameAndType,
-                                                                quantityToReduce,
-                                                                totalQuantity));
-                        ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
-                        return View(formCollection);
-                    }
+                    int quantityToReduce = formCollection.ReduceQuantity;
 
-                    int totalQuantityLeft = totalQuantity - quantityToReduce;
-                    
-                    //could also use DepotRecord/Edit here... 
-                    foreach (var record in depotRecords)
+                    string nameAndType = db.Equipments
+                                           .Where(record => record.Id == formCollection.EquipmentId)
+                                           .FirstOrDefault()
+                                           .NameAndType;
+                    if (formCollection != null)
                     {
-                        if (record.QuantityLeft >= quantityToReduce)
+                        var depotRecords = db.DepotRecords
+                                             .Where(record => record.EquipmentCodeId == formCollection.EquipmentId)
+                                             .ToList()
+                                             // workers can ONLY use equipment with valid expiration date. Discard expired equipment:
+                                             .Where(record => record.ExpirationDate >= DateTime.Today || record.ExpirationDate == null)
+                                             .OrderBy(record => record.ExpirationDate);
+
+                        if (depotRecords.Count() == 0)
                         {
-                            record.QuantityLeft -= quantityToReduce;
-                            break;
+                            ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi {0} med gyldig utløpsdato ikke finnes på lageret",
+                                                                    nameAndType,
+                                                                    quantityToReduce
+                                                                    ));
+                            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+                            return View(formCollection);
                         }
-                        quantityToReduce -= record.QuantityLeft;
-                        record.QuantityLeft = 0;
-                    }
-
-                    await db.SaveChangesAsync();
-                    string userId = User.Identity.GetUserId();
-                    //could do it like this:
-                    //(new LogRecordsController())
-                    //But then newly created controller would miss the essential controller info in MVC like User, HttpContext, Request , Server etc:
-                    ////https://stackoverflow.com/questions/16870413/how-to-call-another-controller-action-from-a-controller-in-mvc
-
-                    //if you want to invoke method from another controller, this is the way:
-                    var controller = DependencyResolver.Current.GetService<LogRecordsController>();
-                    controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
-                    controller.Create(
-                        new LogRecord
+                        int totalQuantity = 0;
+                        foreach (var record in depotRecords)
                         {
-                            UserId = userId,
-                            DateOfRecord = DateTime.Now,
-                            Action = LogAction.FORBRUK,
-                            InfoMessage = string.Format(
-                                                        "{0} ble redusert med {1} enheter. Antall igjen: {2}",
-                                                        nameAndType,
-                                                        formCollection.ReduceQuantity,
-                                                        totalQuantityLeft
-                                                        )
-                        });
-                    await db.SaveChangesAsync();
-                    //ViewBag is not contained when calling to new action. Must use TempData to transfer data between controllers
-                    //see https://stackoverflow.com/questions/14497711/set-viewbag-before-redirect
-                    TempData["StatusMessage"] = string.Format(
-                                                        "Suksess! {0} ble redusert med {1} enheter. Antall igjen: {2}",
-                                                        nameAndType,
-                                                        formCollection.ReduceQuantity,
-                                                        totalQuantityLeft
-                                                        );
-                    return RedirectToAction("ReduceQuantity");
+                            totalQuantity += record.QuantityLeft;
+                        }
+                        if (totalQuantity < quantityToReduce)
+                        {
+                            ModelState.AddModelError(string.Empty, string.Format("Kan ikke redusere {0} med {1} enheter fordi det er kun {2} enheter med gyldig utløpsdato på lageret",
+                                                                    nameAndType,
+                                                                    quantityToReduce,
+                                                                    totalQuantity));
+                            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+                            return View(formCollection);
+                        }
+
+                        int totalQuantityLeft = totalQuantity - quantityToReduce;
+
+                        //could also use DepotRecord/Edit here... 
+                        foreach (var record in depotRecords)
+                        {
+                            if (record.QuantityLeft >= quantityToReduce)
+                            {
+                                record.QuantityLeft -= quantityToReduce;
+                                break;
+                            }
+                            quantityToReduce -= record.QuantityLeft;
+                            record.QuantityLeft = 0;
+                        }
+
+                        await db.SaveChangesAsync();
+                        string userId = User.Identity.GetUserId();
+                        //could do it like this:
+                        //(new LogRecordsController())
+                        //But then newly created controller would miss the essential controller info in MVC like User, HttpContext, Request , Server etc:
+                        ////https://stackoverflow.com/questions/16870413/how-to-call-another-controller-action-from-a-controller-in-mvc
+
+                        //if you want to invoke method from another controller, this is the way:
+                        var controller = DependencyResolver.Current.GetService<LogRecordsController>();
+                        controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
+                        controller.Create(
+                            new LogRecord
+                            {
+                                UserId = userId,
+                                DateOfRecord = DateTime.Now,
+                                Action = LogAction.FORBRUK,
+                                InfoMessage = string.Format(
+                                                            "{0} ble redusert med {1} enheter. Antall igjen: {2}",
+                                                            nameAndType,
+                                                            formCollection.ReduceQuantity,
+                                                            totalQuantityLeft
+                                                            )
+                            });
+                        await db.SaveChangesAsync();
+                        //ViewBag is not contained when calling to new action. Must use TempData to transfer data between controllers
+                        //see https://stackoverflow.com/questions/14497711/set-viewbag-before-redirect
+                        TempData["StatusMessage"] = string.Format(
+                                                            "Suksess! {0} ble redusert med {1} enheter. Antall igjen: {2}",
+                                                            nameAndType,
+                                                            formCollection.ReduceQuantity,
+                                                            totalQuantityLeft
+                                                            );
+                        return RedirectToAction("ReduceQuantity");
+                    }
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", "Noe gikk galt. Vennligst prøv igjen.");
+                    return View(formCollection);
                 }
             }
             ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");

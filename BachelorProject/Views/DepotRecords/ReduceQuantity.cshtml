@@ -4,40 +4,42 @@
 }
 <h2>Registrer antall av brukt utstyr</h2>
 
-@if (ViewBag.StatusMessage != null)
-{
-    <p class="text-success"> @Html.Raw(ViewBag.StatusMessage) </p>
-}
-
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary("", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.EquipmentId, "Navn og type", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.EquipmentId, ViewBag.dropDownList as SelectList, new { @id = "dropdownlist", @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.EquipmentId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+<div class="form-horizontal">
+    <hr />
+    @if (ViewBag.StatusMessage != null)
+    {
+        <ul>
+            <li class="text-success"> @Html.Raw(ViewBag.StatusMessage) </li>
+        </ul>        
+    }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ReduceQuantity, "Antall", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ReduceQuantity, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ReduceQuantity, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Send inn" class="btn btn-success" />
-            </div>
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.EquipmentId, "Navn og type", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.EquipmentId, ViewBag.dropDownList as SelectList, new { @id = "dropdownlist", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.EquipmentId, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ReduceQuantity, "Antall", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ReduceQuantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ReduceQuantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Send inn" class="btn btn-success" />
+        </div>
+    </div>
+</div>
 }
 
 

@@ -297,60 +297,20 @@ namespace BachelorProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                logRecord.DateOfRecord = DateTime.Now;
-                db.LogRecords.Add(logRecord);
-                db.SaveChanges();
+                try
+                {
+                    logRecord.DateOfRecord = DateTime.Now;
+                    db.LogRecords.Add(logRecord);
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    //if something went wrong here, don't do anything
+                }
             }
 
         }
 
-        // GET: LogRecords/Edit/5
-        //public async Task<ActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    LogRecord logRecord = await db.LogRecords.FindAsync(id);
-        //    if (logRecord == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    ViewBag.UserId = new SelectList(db.ApplicationUsers, "Id", "FirstName", logRecord.UserId);
-        //    return View(logRecord);
-        //}
-
-        // POST: LogRecords/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Edit([Bind(Include = "Id,UserId,DateOfRecord,Action,InfoMessage")] LogRecord logRecord)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Entry(logRecord).State = EntityState.Modified;
-        //        await db.SaveChangesAsync();
-        //        return RedirectToAction("Index");
-        //    }
-        //    ViewBag.UserId = new SelectList(db.ApplicationUsers, "Id", "FirstName", logRecord.UserId);
-        //    return View(logRecord);
-        //}
-
-        // GET: LogRecords/Delete/5
-        //public async Task<ActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    LogRecord logRecord = await db.LogRecords.FindAsync(id);
-        //    if (logRecord == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(logRecord);
-        //}
 
         // POST: LogRecords/Delete/5
         [Authorize(Roles = "admin")]
@@ -358,10 +318,17 @@ namespace BachelorProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            LogRecord logRecord = await db.LogRecords.FindAsync(id);
-            db.LogRecords.Remove(logRecord);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                LogRecord logRecord = await db.LogRecords.FindAsync(id);
+                db.LogRecords.Remove(logRecord);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)

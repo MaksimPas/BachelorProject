@@ -24,8 +24,6 @@
         <div class="form-group">
             @Html.Label("Har utstyret utløpsdato?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @*@Html.RadioButtonFor(model => model.ExpirationDate, "YES", new { @checked = "checked" }) JA
-                    @Html.RadioButtonFor(model => model.ExpirationDate, "NO") NEI*@
                 <input id="radio_yes" type="radio" name="expiration" value="YES" checked>
                 <label for="radio_yes">Ja</label>
                 <input id="radio_no" type="radio" name="expiration" value="NO">

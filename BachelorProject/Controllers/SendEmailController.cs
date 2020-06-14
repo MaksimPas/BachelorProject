@@ -177,8 +177,8 @@ namespace BachelorProject.Controllers
             try
             {
                 var senderEmail = new MailAddress("trondheimrodekors@gmail.com", "Trondheim Røde Kors");
-                //var receiverEmail = new MailAddress("maksympas111@gmail.com", "Administrator"); //private email address for testing
-                var receiverEmail = new MailAddress("Trkh-depot@trondheim-redcross.no", "Administrator"); //recipient email
+                var receiverEmail = new MailAddress("maksympas111@gmail.com", "Administrator"); //private email address for testing
+                //var receiverEmail = new MailAddress("Trkh-depot@trondheim-redcross.no", "Administrator"); //recipient email
                 //remember to change password:
                 var password = "rodekors123";
                 var subject = "Påminning om utstyr som går ut på dato";
@@ -220,8 +220,8 @@ namespace BachelorProject.Controllers
             var trigger = TriggerBuilder.Create()
                                 .WithIdentity("trigger1", "group1")
                                 ////just to test:
-                                .WithSchedule(SimpleScheduleBuilder.Create().WithIntervalInSeconds(5))
-                                //.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(7, 0))
+                                //.WithSchedule(SimpleScheduleBuilder.Create().WithIntervalInSeconds(5))
+                                .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(7, 0))
                                 .StartNow()
                                 .Build();
             await sched.ScheduleJob(sendMailJob, trigger);

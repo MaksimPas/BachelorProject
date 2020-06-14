@@ -28,9 +28,9 @@
                 <a class="navbar-brand" href="@Url.Action("Index", "Home")"><span class="glyphicon glyphicon-home"></span> Hjem</a>
             </div>
             <div class="navbar-collapse collapse" id="collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Om", "About", "Home")</li>
-                    <li>@Html.ActionLink("Kontakt", "Contact", "Home")</li>
+                <ul class="nav navbar-nav">  
+                    <li><a href="@Url.Action("About", "Home")"><span class="glyphicon glyphicon-info-sign"></span> Om</a></li>
+                    <li><a href="@Url.Action("Contact", "Home")"><span class="glyphicon glyphicon-envelope"></span> Kontakt</a></li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

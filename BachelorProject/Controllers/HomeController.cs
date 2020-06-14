@@ -50,7 +50,7 @@ namespace BachelorProject.Controllers
             return View();
         }
 
-        [Authorize(Roles = "admin,worker,new_user")]
+        [Authorize(Roles = "admin,subAdmin,worker,new_user")]
         public async Task<ActionResult> returnUserViewAsync()
         {
             string userId = User.Identity.GetUserId();

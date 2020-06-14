@@ -71,8 +71,7 @@ namespace BachelorProject.Controllers
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : message == ManageMessageId.EditProfileInfoSuccess ? "Profilinformasjonen ble endret!"
-                : "";
-
+                : null;
             var userId = User.Identity.GetUserId();
             var model = new IndexViewModel
             {

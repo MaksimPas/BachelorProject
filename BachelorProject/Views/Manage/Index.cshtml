@@ -9,7 +9,9 @@
         <hr />
         @if (ViewBag.StatusMessage != null)
         {
-            <p class="text-success"> @Html.Raw(ViewBag.StatusMessage) </p>
+            <ul>
+                <li class="text-success"> @Html.Raw(ViewBag.StatusMessage) </li>
+            </ul>
         }
         <br />
 
