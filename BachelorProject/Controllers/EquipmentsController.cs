@@ -57,6 +57,18 @@ namespace BachelorProject.Controllers
             ViewBag.sortOrder = sortOrder; //this can be null
             switch (sortColumn)
             {
+                case "Id":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.Id);
+                        ViewBag.newSortOrderForId = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.Id);
+                        ViewBag.newSortOrderForId = "ASC";
+                    }
+                    break;
                 case "NameAndType":
                     if (sortOrder == "ASC")
                     {

@@ -121,61 +121,64 @@ namespace BachelorProject.Controllers
                 return;
             }
 
-            //get admin role id
-            string adminRoleId = roleManager.FindByName("admin").Id;
-            //exclude admin from the result
-            var admins = userManager.Users.Where(user => user.Roles.FirstOrDefault().RoleId == adminRoleId).ToList();
-            string receiver = admins.First().Email;
-            string firstName = admins.First().FirstName;
-            string lastName = admins.First().LastName;
-
-            //creating email body
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<h1>"+string.Format("Hei, {0} {1}!",firstName,lastName)+"</h1>"); //make this contain first and last names 
-            string borderStyle = "style='border: 1px solid black;border-collapse: collapse;'";
-            if (toBeExpired.Count() > 0)
-            {
-                //equipment with near expiration date:
-                sb.AppendLine("<h3> Følgende utstyr har mindre enn 1 måned før det går ut på dato:</h3>");
-                sb.AppendLine("<table style='border: 1px solid black;border-collapse: collapse; width:100%;text-align:center;'>");
-                sb.AppendFormat("<tr><th {4}>{0}</th><th {4}>{1}</th><th {4}>{2}</th><th {4}>{3}</th></tr> ",
-                                "Navn og Type", "Utløpsdato", "Antall opprinnelig", "Antall igjen",borderStyle);
-                foreach (var item in toBeExpired)
-                {
-                    sb.AppendFormat("<tr><td {4}>{0}</td><td {4}>{1}</td><td {4}>{2}</td><td {4}>{3}</td></tr> ",
-                                    item.Equipment.NameAndType,
-                                    item.ExpirationDate.Value.ToShortDateString(),
-                                    item.QuantityOriginal,
-                                    item.QuantityLeft,
-                                    borderStyle);
-                }
-                sb.AppendLine("</table>");
-                sb.AppendLine("<br>");
-                sb.AppendLine("<hr/>");
-            }
-            if (expired.Count() > 0)
-            {
-                //Equipment which has already expired:
-                sb.AppendLine("<h3> Følgende utstyr har allerede gått ut på dato:</h3>");
-                sb.AppendLine("<table style='border: 1px solid black;border-collapse: collapse; width:100%;text-align:center;'>");
-                sb.AppendFormat("<tr><th {4}>{0}</th><th {4}>{1}</th><th {4}>{2}</th><th {4}>{3}</th></tr> ",
-                                "Navn og Type", "Utløpsdato", "Antall opprinnelig", "Antall igjen",borderStyle);
-                foreach (var item in expired)
-                {
-                    sb.AppendFormat("<tr><td {4}>{0}</td><td {4}>{1}</td><td {4}>{2}</td><td {4}>{3}</td></tr> ",
-                                    item.Equipment.NameAndType,
-                                    item.ExpirationDate.Value.ToShortDateString(),
-                                    item.QuantityOriginal,
-                                    item.QuantityLeft,
-                                    borderStyle);
-                }
-                sb.AppendLine("</table>");
-            }
-
-            var body = sb.ToString();
-
             try
             {
+                //get admin role id
+                string adminRoleId = roleManager.FindByName("admin").Id;
+                //exclude admin from the result
+                var admins = userManager.Users.Where(user => user.Roles.FirstOrDefault().RoleId == adminRoleId).ToList();
+                string receiver = admins.First().Email;
+                string firstName = admins.First().FirstName;
+                string lastName = admins.First().LastName;
+
+                //creating email body
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("<h1>"+string.Format("Hei, {0} {1}!",firstName,lastName)+"</h1>"); //make this contain first and last names 
+                string borderStyle = "style='border: 1px solid black;border-collapse: collapse;'";
+                if (toBeExpired.Count() > 0)
+                {
+                    //equipment with near expiration date:
+                    sb.AppendLine("<h3> Følgende utstyr har mindre enn 1 måned før det går ut på dato:</h3>");
+                    sb.AppendLine("<table style='border: 1px solid black;border-collapse: collapse; width:100%;text-align:center;'>");
+                    sb.AppendFormat("<tr><th {5}>{0}</th><th {5}>{1}</th><th {5}>{2}</th><th {5}>{3}</th><th {5}>{4}</th></tr> ",
+                                    "ID","Navn og Type", "Utløpsdato", "Antall opprinnelig", "Antall igjen",borderStyle);
+                    foreach (var item in toBeExpired)
+                    {
+                        sb.AppendFormat("<tr><td {5}>{0}</td><td {5}>{1}</td><td {5}>{2}</td><td {5}>{3}</td><td {5}>{4}</td></tr> ",
+                                        item.Id,
+                                        item.Equipment.NameAndType,
+                                        item.ExpirationDate.Value.ToShortDateString(),
+                                        item.QuantityOriginal,
+                                        item.QuantityLeft,
+                                        borderStyle);
+                    }
+                    sb.AppendLine("</table>");
+                    sb.AppendLine("<br>");
+                    sb.AppendLine("<hr/>");
+                }
+                if (expired.Count() > 0)
+                {
+                    //Equipment which has already expired:
+                    sb.AppendLine("<h3> Følgende utstyr har allerede gått ut på dato:</h3>");
+                    sb.AppendLine("<table style='border: 1px solid black;border-collapse: collapse; width:100%;text-align:center;'>");
+                    sb.AppendFormat("<tr><th {5}>{0}</th><th {5}>{1}</th><th {5}>{2}</th><th {5}>{3}</th><th {5}>{4}</th></tr> ",
+                                    "ID", "Navn og Type", "Utløpsdato", "Antall opprinnelig", "Antall igjen", borderStyle);
+                    foreach (var item in expired)
+                    {
+                        sb.AppendFormat("<tr><td {5}>{0}</td><td {5}>{1}</td><td {5}>{2}</td><td {5}>{3}</td><td {5}>{4}</td></tr> ",
+                                        item.Id,
+                                        item.Equipment.NameAndType,
+                                        item.ExpirationDate.Value.ToShortDateString(),
+                                        item.QuantityOriginal,
+                                        item.QuantityLeft,
+                                        borderStyle);
+                    }
+                    sb.AppendLine("</table>");
+                }
+
+                var body = sb.ToString();
+
+            
                 var senderEmail = new MailAddress("trondheimrodekors@gmail.com", "Trondheim Røde Kors");
                 var receiverEmail = new MailAddress("maksympas111@gmail.com", "Administrator"); //private email address for testing
                 //var receiverEmail = new MailAddress("Trkh-depot@trondheim-redcross.no", "Administrator"); //recipient email
@@ -198,7 +201,7 @@ namespace BachelorProject.Controllers
             }
             catch (Exception e)
             {
-                var message = e.Message;
+                return;
             }
         }
     }

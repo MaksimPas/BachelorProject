@@ -33,7 +33,23 @@
                 <tr>
                     <th>
                         <div class="table_cell">
-                            @Ajax.ActionLink("Navn og type", "UpdateIndex",
+                            @Ajax.ActionLink("ID", "UpdateIndex",
+                                new
+                                {
+                                    sortColumn = Html.DisplayNameFor(model => model.Id),
+                                    sortOrder = "ASC"
+                                },
+                                new AjaxOptions
+                                {
+                                    HttpMethod = "GET",
+                                    UpdateTargetId = "tableDiv"
+                                })
+                            <i class="fa fa-fw fa-sort"></i>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="table_cell">
+                            @Ajax.ActionLink("Navn og Type", "UpdateIndex",
                                 new
                                 {
                                     sortColumn = Html.DisplayNameFor(model => model.NameAndType),
@@ -57,6 +73,9 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.NameAndType)
                         </td>

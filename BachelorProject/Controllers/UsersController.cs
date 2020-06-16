@@ -204,7 +204,7 @@ namespace BachelorProject.Controllers
                 return HttpNotFound();
             }
             UserViewModel model = await UserViewModel.CreateAsync(user, roleManager);
-            ViewBag.dropdownlist = new SelectList(db.Roles.Where(role=>role.Name!="admin"), "Id", "Name", model.RoleId);
+            ViewBag.dropdownlist = new SelectList(db.Roles.Where(role=>role.Name!="admin").OrderBy(role => role.Name), "Id", "Name", model.RoleId);
             return View(model);
         }
 
@@ -237,7 +237,7 @@ namespace BachelorProject.Controllers
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewBag.dropdownlist = new SelectList(db.Roles.Where(role => role.Name != "admin"), "Id", "Name", userViewModel.RoleId);
+            ViewBag.dropdownlist = new SelectList(db.Roles.Where(role => role.Name != "admin").OrderBy(role => role.Name), "Id", "Name", userViewModel.RoleId);
             return View(userViewModel);
         }
 

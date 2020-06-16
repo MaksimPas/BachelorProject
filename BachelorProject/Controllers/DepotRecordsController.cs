@@ -98,6 +98,18 @@ namespace BachelorProject.Controllers
             ViewBag.sortOrder = sortOrder; //this can be null
             switch (sortColumn)
             {
+                case "Id":
+                    if (sortOrder == "ASC")
+                    {
+                        result = result.OrderBy(d => d.Id);
+                        ViewBag.newSortOrderForId = "DESC";
+                    }
+                    else
+                    {
+                        result = result.OrderByDescending(d => d.Id);
+                        ViewBag.newSortOrderForId = "ASC";
+                    }
+                    break;
                 case "NameAndType":
                     if (sortOrder == "ASC")
                     {
@@ -189,7 +201,7 @@ namespace BachelorProject.Controllers
         [Authorize(Roles = "admin,subAdmin")]
         public ActionResult Create()
         {
-            ViewBag.selectList = new SelectList(db.Equipments, "Id", "NameAndType");
+            ViewBag.selectList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
             return View();
         }
 
@@ -217,7 +229,7 @@ namespace BachelorProject.Controllers
                     return View(depotRecord);
                 }
             }
-            ViewBag.selectList = new SelectList(db.Equipments, "Id", "NameAndType");
+            ViewBag.selectList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
             return View(depotRecord);
         }
 
@@ -234,7 +246,7 @@ namespace BachelorProject.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType", depotRecord.EquipmentCodeId);
+            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
             return View(depotRecord);
         }
 
@@ -247,7 +259,7 @@ namespace BachelorProject.Controllers
             if (depotRecord.QuantityLeft > depotRecord.QuantityOriginal)
             {
                 ModelState.AddModelError(string.Empty, "Gjenværende antallet kan ikke være større enn det opprinnelige antallet!");
-                ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType", depotRecord.EquipmentCodeId);
+                ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
                 return View(depotRecord);
             }
             if (ModelState.IsValid)
@@ -256,7 +268,7 @@ namespace BachelorProject.Controllers
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType", depotRecord.EquipmentCodeId);
+            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
             return View(depotRecord);
         }
 
@@ -312,7 +324,7 @@ namespace BachelorProject.Controllers
             {
                 ViewBag.StatusMessage = TempData["StatusMessage"].ToString();
             }
-            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
             return View();
         }
 
@@ -346,7 +358,7 @@ namespace BachelorProject.Controllers
                                                                     nameAndType,
                                                                     quantityToReduce
                                                                     ));
-                            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+                            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
                             return View(formCollection);
                         }
                         int totalQuantity = 0;
@@ -360,7 +372,7 @@ namespace BachelorProject.Controllers
                                                                     nameAndType,
                                                                     quantityToReduce,
                                                                     totalQuantity));
-                            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+                            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
                             return View(formCollection);
                         }
 
@@ -419,7 +431,7 @@ namespace BachelorProject.Controllers
                     return View(formCollection);
                 }
             }
-            ViewBag.dropDownList = new SelectList(db.Equipments, "Id", "NameAndType");
+            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
             return View(formCollection);
         }
         

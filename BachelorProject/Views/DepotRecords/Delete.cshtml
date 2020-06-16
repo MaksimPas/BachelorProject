@@ -12,6 +12,15 @@
         <dl class="dl-horizontal form-horizontal">
             <div class="form-group">
                 <dt>
+                    <span>ID</span>
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Id)
+                </dd>
+            </div>
+            <div class="form-group">
+                <dt>
                     <span>Navn og type</span>
                 </dt>
 
@@ -19,7 +28,6 @@
                     @Html.DisplayFor(model => model.Equipment.NameAndType)
                 </dd>
             </div>
-
             <div class="form-group">
                 <dt>
                     <span>Opprettingsdato</span>

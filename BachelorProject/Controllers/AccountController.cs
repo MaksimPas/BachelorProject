@@ -376,7 +376,6 @@ namespace BachelorProject.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
                 case SignInStatus.Failure:
                     //write scenario here
-                    //return RedirectToLocal(returnUrl);
                 default:
                     //If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
