@@ -196,13 +196,9 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SendEmailController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Migrations\202006160254247_Init.cs" />
-    <Compile Include="Migrations\202006160254247_Init.designer.cs">
-      <DependentUpon>202006160254247_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202006160300572_test2.cs" />
-    <Compile Include="Migrations\202006160300572_test2.designer.cs">
-      <DependentUpon>202006160300572_test2.cs</DependentUpon>
+    <Compile Include="Migrations\202006171707150_Init.cs" />
+    <Compile Include="Migrations\202006171707150_Init.designer.cs">
+      <DependentUpon>202006171707150_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Validation\CustomAttributes.cs" />
     <Compile Include="Global.asax.cs">
@@ -350,11 +346,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202006160254247_Init.resx">
-      <DependentUpon>202006160254247_Init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202006160300572_test2.resx">
-      <DependentUpon>202006160300572_test2.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202006171707150_Init.resx">
+      <DependentUpon>202006171707150_Init.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\ValidationResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

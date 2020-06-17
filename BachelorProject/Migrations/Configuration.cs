@@ -70,12 +70,12 @@ namespace BachelorProject.Migrations
             //NB! Don't need to specify ID upon inserting due to IDENTITY!
             //HOWEVER ID need to be specified upon updating the row. 
 
-            context.Equipments.AddOrUpdate(new Equipment { Id = 1, NameAndType = "Bondasje (kompresjon)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 1, NameAndType = "Bandasje (kompresjon)" });
             context.Equipments.AddOrUpdate(new Equipment { Id = 2, NameAndType = "Sprøyte 10mL" });
             context.Equipments.AddOrUpdate(new Equipment { Id = 3, NameAndType = "Hansker S" });
             context.Equipments.AddOrUpdate(new Equipment { Id = 4, NameAndType = "Hansker M" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 5, NameAndType = "Bondasje B" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 6, NameAndType = "Bondasje A" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 5, NameAndType = "Bandasje B" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 6, NameAndType = "Bandasje A" });
 
             context.SaveChanges();
 
