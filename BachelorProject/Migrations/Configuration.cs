@@ -70,12 +70,29 @@ namespace BachelorProject.Migrations
             //NB! Don't need to specify ID upon inserting due to IDENTITY!
             //HOWEVER ID need to be specified upon updating the row. 
 
-            context.Equipments.AddOrUpdate(new Equipment { Id = 1, NameAndType = "Bandasje (kompresjon)" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 2, NameAndType = "Sprøyte 10mL" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 3, NameAndType = "Hansker S" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 4, NameAndType = "Hansker M" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 5, NameAndType = "Bandasje B" });
-            context.Equipments.AddOrUpdate(new Equipment { Id = 6, NameAndType = "Bandasje A" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 1, NameAndType = "Kompresjonsbandasje 8 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 2, NameAndType = "Kompresjonsbandasje 10 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 3, NameAndType = "Kompresjonsbandasje 12 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 4, NameAndType = "Støttebandasje 8 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 5, NameAndType = "Enkeltmannspakke 7,5 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 6, NameAndType = "Enkeltmannspakke 18 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 7, NameAndType = "Gasbind 8 cm" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 8, NameAndType = "Kompress stor (10x20)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 9, NameAndType = "Kompress liten (6x5)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 10, NameAndType = "Kompress høyabsorberende" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 11, NameAndType = "Hansker S" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 12, NameAndType = "Hansker M" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 13, NameAndType = "Hansker L" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 14, NameAndType = "Hansker XL" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 15, NameAndType = "Sprøyte 1mL" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 16, NameAndType = "Sprøyte 5mL" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 17, NameAndType = "Plaster (1stk)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 18, NameAndType = "Plaster (rull)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 19, NameAndType = "Plaster Mepore (8x10)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 20, NameAndType = "Plaster Gnagsår" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 21, NameAndType = "Plaster Melfix (uten kompress)" });
+            context.Equipments.AddOrUpdate(new Equipment { Id = 22, NameAndType = "Teip" });
+
 
             context.SaveChanges();
 
@@ -83,8 +100,22 @@ namespace BachelorProject.Migrations
             context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 1, EquipmentCodeId = 1, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 3, 14), QuantityOriginal = 50, QuantityLeft = 30, Information = "tester info" });
             context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 2, EquipmentCodeId = 1, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
             context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 3, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 4, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = null, QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 5, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = null, QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 4, EquipmentCodeId = 2, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 5, EquipmentCodeId = 3, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 6, EquipmentCodeId = 3, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 7, EquipmentCodeId = 4, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 8, EquipmentCodeId = 22, DateOfRecord = DateTime.Today, ExpirationDate = null, QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 9, EquipmentCodeId = 22, DateOfRecord = DateTime.Today, ExpirationDate = null, QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 10, EquipmentCodeId = 6, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 11, EquipmentCodeId = 7, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 12, EquipmentCodeId = 8, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 13, EquipmentCodeId = 9, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 14, EquipmentCodeId = 10, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 21, EquipmentCodeId = 17, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 22, EquipmentCodeId = 18, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 23, EquipmentCodeId = 19, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 24, EquipmentCodeId = 20, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 25, EquipmentCodeId = 21, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
             context.SaveChanges();
 
             //seeding some log records
