@@ -44,7 +44,7 @@
                     </th>
                     <th>
                         <div class="table_cell">
-                            @Ajax.ActionLink("Transaksjonstype", "UpdateIndexByUserId",
+                            @Ajax.ActionLink("Hendelse", "UpdateIndexByUserId",
                                 new
                                 {
                                     sortColumn = Html.DisplayNameFor(model => model.Action),
@@ -99,7 +99,7 @@
             <p>Side  @(pagedList.PageCount < pagedList.PageNumber ? 0 : pagedList.PageNumber) av @pagedList.PageCount </p>
 
             @Html.PagedListPager(pagedList,
-                         page => Url.Action("UpdateIndex", "DepotRecords",
+                         page => Url.Action("UpdateIndexByUserId", "LogRecords",
                          new
                          {
                              page

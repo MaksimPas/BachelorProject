@@ -47,15 +47,16 @@ namespace BachelorProject.Migrations
             }
 
             var adminUser = userManager.FindByEmail("admin@rodekors.com");
-            
             if (adminUser == null)
             {
                 userManager.Create(
                     new ApplicationUser
                     {
                         Email = "admin@rodekors.com",
-                        FirstName = "Micah",
-                        LastName = "Lehmann",
+                        //FirstName = "Micah",
+                        //LastName = "Lehmann",
+                        FirstName = "Ola",
+                        LastName = "Nordmann",
                         PhoneNumber = "44444444",
                         UserName = "admin@rodekors.com",
                         DateOfRecord = DateTime.Today
@@ -63,6 +64,35 @@ namespace BachelorProject.Migrations
                      "admin123"
                     );
             }
+
+            string email;
+            ApplicationUser user;
+
+
+            for (int i = 1; i < 14; i++)
+            {
+                email = "test"+i.ToString()+"@test.com";
+                user = userManager.FindByEmail(email);
+                if (user == null)
+                {
+                    userManager.Create(
+                        new ApplicationUser
+                        {
+                            Email = email,
+                            FirstName = "Ola"+i.ToString(),
+                            LastName = "Nordmann" + i.ToString(),
+                            PhoneNumber = "44444444",
+                            UserName = email,
+                            DateOfRecord = DateTime.Today
+                        },
+                         "123123"
+                        );
+                }
+                userManager.AddToRole(userManager.FindByEmail(email).Id, roleName1);
+            }
+            
+
+
 
             IdentityResult result = userManager.AddToRole(userManager.FindByEmail("admin@rodekors.com").Id, roleName3);
 
@@ -109,13 +139,13 @@ namespace BachelorProject.Migrations
             context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 10, EquipmentCodeId = 6, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
             context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 11, EquipmentCodeId = 7, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
             context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 12, EquipmentCodeId = 8, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 13, EquipmentCodeId = 9, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 14, EquipmentCodeId = 10, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 21, EquipmentCodeId = 17, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 22, EquipmentCodeId = 18, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 23, EquipmentCodeId = 19, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 24, EquipmentCodeId = 20, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
-            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 25, EquipmentCodeId = 21, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 6, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 13, EquipmentCodeId = 9, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 14, EquipmentCodeId = 10, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 21, EquipmentCodeId = 17, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 22, EquipmentCodeId = 18, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 23, EquipmentCodeId = 19, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 24, EquipmentCodeId = 20, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
+            context.DepotRecords.AddOrUpdate(new DepotRecord { Id = 25, EquipmentCodeId = 21, DateOfRecord = DateTime.Today, ExpirationDate = new DateTime(2020, 8, 14), QuantityOriginal = 100, QuantityLeft = 30, Information = "tester info" });
             context.SaveChanges();
 
             //seeding some log records

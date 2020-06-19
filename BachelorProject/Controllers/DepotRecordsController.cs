@@ -221,7 +221,6 @@ namespace BachelorProject.Controllers
                     depotRecord.DateOfRecord = DateTime.Now;
                     depotRecord = db.DepotRecords.Add(depotRecord);
                     await db.SaveChangesAsync();
-
                     var controller = DependencyResolver.Current.GetService<LogRecordsController>();
                     controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
                     controller.Create(
@@ -239,7 +238,6 @@ namespace BachelorProject.Controllers
                                                         )
                         });
                     await db.SaveChangesAsync();
-
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)

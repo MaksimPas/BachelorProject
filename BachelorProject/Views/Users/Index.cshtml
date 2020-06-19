@@ -166,7 +166,7 @@
             <p>Side  @(pagedList.PageCount < pagedList.PageNumber ? 0 : pagedList.PageNumber) av @pagedList.PageCount </p>
 
             @Html.PagedListPager(pagedList,
-                         page => Url.Action("UpdateIndex", "DepotRecords",
+                         page => Url.Action("UpdateIndex", "Users",
                          new
                          {
                              page
