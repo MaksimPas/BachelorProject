@@ -219,13 +219,33 @@ namespace BachelorProject.Controllers
                 {
                     depotRecord.QuantityLeft = depotRecord.QuantityOriginal;
                     depotRecord.DateOfRecord = DateTime.Now;
-                    db.DepotRecords.Add(depotRecord);
+                    depotRecord = db.DepotRecords.Add(depotRecord);
                     await db.SaveChangesAsync();
+
+                    var controller = DependencyResolver.Current.GetService<LogRecordsController>();
+                    controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
+                    controller.Create(
+                        new LogRecord
+                        {
+                            UserId = this.User.Identity.GetUserId(),
+                            DateOfRecord = DateTime.Now,
+                            Action = LogAction.NYTT_UTSTYR,
+                            InfoMessage = string.Format(
+                                                        "NYTT UTSTYR. Utstyr-ID: {0}; Type-ID: {1}; Utløpsdato: {2}; Antall opprinnelig: {3}",
+                                                        depotRecord.Id,
+                                                        depotRecord.EquipmentCodeId,
+                                                        (depotRecord.ExpirationDate != null) ? depotRecord.ExpirationDate.Value.ToShortDateString() : "Ingen",
+                                                        depotRecord.QuantityOriginal
+                                                        )
+                        });
+                    await db.SaveChangesAsync();
+
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
                 {
                     ModelState.AddModelError("", "Noe gikk galt. Vennligst prøv igjen.");
+                    ViewBag.selectList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
                     return View(depotRecord);
                 }
             }
@@ -256,20 +276,49 @@ namespace BachelorProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,EquipmentCodeId,ExpirationDate,DateOfRecord,QuantityOriginal,QuantityLeft,Information")] DepotRecord depotRecord)
         {
-            if (depotRecord.QuantityLeft > depotRecord.QuantityOriginal)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Gjenværende antallet kan ikke være større enn det opprinnelige antallet!");
+                if (depotRecord.QuantityLeft > depotRecord.QuantityOriginal)
+                {
+                    ModelState.AddModelError(string.Empty, "Gjenværende antallet kan ikke være større enn det opprinnelige antallet!");
+                    ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
+                    return View(depotRecord);
+                }
+                if (ModelState.IsValid)
+                {
+                    db.Entry(depotRecord).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+
+                    var controller = DependencyResolver.Current.GetService<LogRecordsController>();
+                    controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
+                    controller.Create(
+                        new LogRecord
+                        {
+                            UserId = this.User.Identity.GetUserId(),
+                            DateOfRecord = DateTime.Now,
+                            Action = LogAction.ENDRING,
+                            InfoMessage = string.Format(
+                                                        "ENDRING. NY INFO: Utstyr-ID: {0}; Type-ID: {1}; Utløpsdato: {2}; Antall opprinnelig: {3}; Antall igjen: {4}",
+                                                        depotRecord.Id,
+                                                        depotRecord.EquipmentCodeId,
+                                                        (depotRecord.ExpirationDate != null) ? depotRecord.ExpirationDate.Value.ToShortDateString() : "Ingen",
+                                                        depotRecord.QuantityOriginal
+                                                        ,depotRecord.QuantityLeft
+                                                        )
+                        });
+                    await db.SaveChangesAsync();
+
+                    return RedirectToAction("Index");
+                }
                 ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
                 return View(depotRecord);
             }
-            if (ModelState.IsValid)
+            catch (Exception e)
             {
-                db.Entry(depotRecord).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                ModelState.AddModelError("", "Noe gikk galt. Vennligst prøv igjen.");
+                ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
+                return View(depotRecord);
             }
-            ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType", depotRecord.EquipmentCodeId);
-            return View(depotRecord);
         }
 
         // GET: DepotRecords/Delete/5
@@ -300,6 +349,26 @@ namespace BachelorProject.Controllers
                 DepotRecord depotRecord = await db.DepotRecords.FindAsync(id);
                 db.DepotRecords.Remove(depotRecord);
                 await db.SaveChangesAsync();
+
+                var controller = DependencyResolver.Current.GetService<LogRecordsController>();
+                controller.ControllerContext = new ControllerContext(this.Request.RequestContext, controller);
+                controller.Create(
+                    new LogRecord
+                    {
+                        UserId = this.User.Identity.GetUserId(),
+                        DateOfRecord = DateTime.Now,
+                        Action = LogAction.SLETTING,
+                        InfoMessage = string.Format(
+                                                    "SLETTING. INFO: Utstyr-ID: {0}; Type-ID: {1}; Utløpsdato: {2}; Antall opprinnelig: {3}; Antall igjen: {4}",
+                                                    depotRecord.Id,
+                                                    depotRecord.EquipmentCodeId,
+                                                    (depotRecord.ExpirationDate != null) ? depotRecord.ExpirationDate.Value.ToShortDateString() : "Ingen",
+                                                    depotRecord.QuantityOriginal
+                                                    , depotRecord.QuantityLeft
+                                                    )
+                    });
+                await db.SaveChangesAsync();
+
                 return RedirectToAction("Index");
             }
             catch (Exception e)
@@ -331,7 +400,7 @@ namespace BachelorProject.Controllers
         [Authorize(Roles = "worker,subAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ReduceQuantity([Bind(Include = "EquipmentId,ReduceQuantity")] ReduceAmountViewModel formCollection)
+        public async Task<ActionResult> ReduceQuantity([Bind(Include = "EquipmentCodeId,ReduceQuantity")] ReduceAmountViewModel formCollection)
         {
             if (ModelState.IsValid)
             {
@@ -340,13 +409,13 @@ namespace BachelorProject.Controllers
                     int quantityToReduce = formCollection.ReduceQuantity;
 
                     string nameAndType = db.Equipments
-                                           .Where(record => record.Id == formCollection.EquipmentId)
+                                           .Where(record => record.Id == formCollection.EquipmentCodeId)
                                            .FirstOrDefault()
                                            .NameAndType;
                     if (formCollection != null)
                     {
                         var depotRecords = db.DepotRecords
-                                             .Where(record => record.EquipmentCodeId == formCollection.EquipmentId)
+                                             .Where(record => record.EquipmentCodeId == formCollection.EquipmentCodeId)
                                              .ToList()
                                              // workers can ONLY use equipment with valid expiration date. Discard expired equipment:
                                              .Where(record => record.ExpirationDate >= DateTime.Today || record.ExpirationDate == null)
@@ -428,6 +497,7 @@ namespace BachelorProject.Controllers
                 catch (Exception e)
                 {
                     ModelState.AddModelError("", "Noe gikk galt. Vennligst prøv igjen.");
+                    ViewBag.dropDownList = new SelectList(db.Equipments.OrderBy(r => r.NameAndType), "Id", "NameAndType");
                     return View(formCollection);
                 }
             }

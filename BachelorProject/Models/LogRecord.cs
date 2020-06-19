@@ -28,5 +28,8 @@ namespace BachelorProject.Models
 
 public enum LogAction
 {
-    FORBRUK
+    FORBRUK,
+    NYTT_UTSTYR,
+    ENDRING,
+    SLETTING
 }

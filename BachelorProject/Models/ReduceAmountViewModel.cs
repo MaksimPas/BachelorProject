@@ -14,11 +14,11 @@ namespace BachelorProject.Models
         {
             return new ReduceAmountViewModel
             {
-                EquipmentId = equipmentId,
+                EquipmentCodeId = equipmentId,
                 ReduceQuantity = reduceQuantity
             };
         }
-        public int EquipmentId { get; set; }
+        public int EquipmentCodeId { get; set; }
 
         [Required(ErrorMessage = "Skriv inn antall")]
         [NotNegativeNumber(ErrorMessage = "Antallet må være større enn 0")]

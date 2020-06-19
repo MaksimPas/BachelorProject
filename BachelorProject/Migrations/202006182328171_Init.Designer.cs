@@ -13,7 +13,7 @@ namespace BachelorProject.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202006181558038_Init"; }
+            get { return "202006182328171_Init"; }
         }
         
         string IMigrationMetadata.Source

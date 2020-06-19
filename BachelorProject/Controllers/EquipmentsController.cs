@@ -136,8 +136,7 @@ namespace BachelorProject.Controllers
                     ModelState.AddModelError("", "Tips: utstyret kan ikke ha duplisert navn.");
                     return View(equipment);
                 }
-            }
-
+            }   
             return View(equipment);
         }
 
